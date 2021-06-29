@@ -1,8 +1,11 @@
 import React from "react";
-import AppLayout from "@/components/Layout/AppLayout";
 
 const Index: React.FC = ({ children }) => {
-  return <AppLayout>{children}</AppLayout>;
+  return (
+    <>
+      <h1>Home Page</h1>
+    </>
+  );
 };
 
 export default Index;

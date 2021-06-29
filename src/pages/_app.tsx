@@ -1,7 +1,7 @@
+import React from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
 import AppLayout from "@/components/Layout/AppLayout";
-import { isServer } from "@/utils";
 require("src/styles/index.less");
 
 const MyApp = ({ Component, pageProps }: AppProps) => {

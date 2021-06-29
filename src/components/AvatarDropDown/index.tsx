@@ -17,12 +17,11 @@ import Avatar from "@/components/Avatar";
 import classes from "./style.module.less";
 
 interface IProps {
-  style: any;
+  style?: any;
 }
 
 const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
-  const { paymentDetail: { paid } = {} } = {};
-
+  const vip = true;
   const handleLogout = React.useCallback(async () => {
     Modal.confirm({
       title: "Are you sure?",
@@ -44,7 +43,7 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
     <Menu className={classes.menuDropdown}>
       <Menu.Item key="info">
         <div className={classes.name}>
-          <Avatar size={50} src={avatar} fullName={fullName} vip={paid} />
+          <Avatar size={50} src={avatar} fullName={fullName} vip={vip} />
           <div className={classes.fullName}>
             <strong>{fullName}</strong>
             <div className="text-small">{email}</div>
@@ -87,7 +86,7 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
           style={{
             cursor: "pointer",
           }}
-          vip={paid}
+          vip={vip}
         />
       </div>
     </Dropdown>

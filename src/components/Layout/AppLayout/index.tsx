@@ -42,6 +42,7 @@ const AppLayout: React.FC<IProps> = ({
   const [collapsed, setCollapsed] = useState(false);
   const [mobiShow, setMobiShow] = useState(false);
   const [broken, setBroken] = useState(false);
+  const theme = alwaysDarkMode ? "dark" : "light";
   const handleToggle = () => {
     if (broken) {
       setMobiShow(!mobiShow);
@@ -87,6 +88,7 @@ const AppLayout: React.FC<IProps> = ({
           style={{
             left: broken && !mobiShow ? -200 : 0,
           }}
+          theme={theme}
         >
           <Link href="/">
             <a>
@@ -101,7 +103,7 @@ const AppLayout: React.FC<IProps> = ({
               </div>
             </a>
           </Link>
-          {isClient && <Sidebar />}
+          {isClient && <Sidebar theme={theme} />}
         </Sider>
         <Layout
           className={classes.siteLayout}

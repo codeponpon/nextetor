@@ -15,7 +15,7 @@ const Login = () => {
       <div className={classes.left}>
         <div className={classes.leftOverlay} />
         <div className={classes.leftContent}>
-          <Logo />
+          <Logo width={150} height={150} />
           <div className="ml-4 flex-1">
             <h1 className="pt-0 text-white">Nextetor</h1>
             <p className="">Description</p>

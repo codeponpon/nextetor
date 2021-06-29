@@ -1,25 +1,18 @@
 import React from "react";
 import { Avatar } from "antd";
+import { AvatarSize } from "antd/lib/avatar/SizeContext";
 
 interface IProps {
   src: string;
   fullName?: string;
   className?: string;
-  style?: object;
+  style?: any;
   vip?: boolean;
-  size: string | number;
+  size: AvatarSize | any;
 }
 
 const AvatarCpn: React.FC<IProps> = (props: IProps) => {
-  const {
-    src = "",
-    fullName = "",
-    className = "",
-    style = {},
-    size = 50,
-    vip = false,
-    ...attr
-  } = props;
+  const { src, fullName, className, style, size, vip, ...attr } = props;
 
   if (vip) {
     return (
@@ -34,17 +27,17 @@ const AvatarCpn: React.FC<IProps> = (props: IProps) => {
         }}
       >
         <Avatar
-          {...attr}
           size={size}
           className={className}
           src={src}
           style={{
             border: "1px solid rgba(228, 228, 228, 0.6)",
           }}
+          {...attr}
         >
           {!src ? (
             <div style={{ fontSize: size / 3, lineHeight: size + "px" }}>
-              {fullName.slice(0, 2)}
+              {fullName && fullName.slice(0, 2)}
             </div>
           ) : (
             ""
@@ -92,7 +85,7 @@ const AvatarCpn: React.FC<IProps> = (props: IProps) => {
     >
       {!src ? (
         <div style={{ fontSize: size / 3, lineHeight: size + "px" }}>
-          {fullName.slice(0, 2)}
+          {fullName && fullName.slice(0, 2)}
         </div>
       ) : (
         ""

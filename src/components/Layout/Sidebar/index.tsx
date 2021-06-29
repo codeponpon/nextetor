@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/router";
 
-import { Menu } from "antd";
+import { Menu, MenuTheme } from "antd";
 import { DashboardOutlined } from "@ant-design/icons";
 
-const Sidebar = () => {
+const Sidebar = ({ theme }: { theme: MenuTheme }) => {
   const router = useRouter();
 
   // eslint-disable-next-line no-unused-vars
@@ -17,7 +17,7 @@ const Sidebar = () => {
       selectedKeys={["/" + (sub && sub !== "[id]" ? sub : root)]}
       defaultOpenKeys={["/" + root]}
       mode="inline"
-      theme="dark"
+      theme={theme}
       style={{
         padding: "15px 0",
       }}
