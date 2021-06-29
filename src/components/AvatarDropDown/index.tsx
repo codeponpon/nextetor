@@ -6,6 +6,7 @@ import { Menu, Dropdown, Modal } from "antd";
 import Router from "next/router";
 import Link from "next/link";
 
+import { FiUser } from "react-icons/fi";
 import { BiKey } from "react-icons/bi";
 import { AiOutlineLogout } from "react-icons/ai";
 
@@ -16,7 +17,7 @@ import Avatar from "@/components/Avatar";
 import classes from "./style.module.less";
 
 interface IProps {
-  style: object;
+  style: any;
 }
 
 const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
@@ -41,22 +42,24 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
   const email = "cpp@example.com";
   const menu = (
     <Menu className={classes.menuDropdown}>
-      <div className={classes.name}>
-        <Avatar size={50} src={avatar} fullName={fullName} vip={paid} />
-        <div className={classes.fullName}>
-          <strong>{fullName}</strong>
-          <div className="text-small">{email}</div>
+      <Menu.Item key="info">
+        <div className={classes.name}>
+          <Avatar size={50} src={avatar} fullName={fullName} vip={paid} />
+          <div className={classes.fullName}>
+            <strong>{fullName}</strong>
+            <div className="text-small">{email}</div>
+          </div>
         </div>
-      </div>
+      </Menu.Item>
       <Menu.Divider />
-      {/* <Menu.Item>
-				<Link href="/profile">
-					<a className={classes.item}>
-						<FiUser />
-						<span>Profile</span>
-					</a>
-				</Link>
-			</Menu.Item> */}
+      <Menu.Item key="profile">
+        <Link href="/profile">
+          <a className={classes.item}>
+            <FiUser />
+            <span>Profile</span>
+          </a>
+        </Link>
+      </Menu.Item>
       <Menu.Item key="change">
         <Link href="/change-password">
           <a className={classes.item}>
@@ -75,7 +78,7 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
   );
 
   return (
-    <Dropdown style={style} overlay={menu} trigger={["click"]}>
+    <Dropdown overlay={menu} trigger={["click"]}>
       <div style={{ lineHeight: "50px" }}>
         <Avatar
           size={30}

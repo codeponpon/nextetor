@@ -3,10 +3,10 @@ import { Avatar } from "antd";
 
 interface IProps {
   src: string;
-  fullName: string;
-  className: string;
-  style: object;
-  vip: boolean;
+  fullName?: string;
+  className?: string;
+  style?: object;
+  vip?: boolean;
   size: string | number;
 }
 
