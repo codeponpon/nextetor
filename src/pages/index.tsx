@@ -1,7 +1,11 @@
-export default function Home() {
+import Home from "@/containers/Home";
+import Head from "@/components/Head";
+
+export default function HomePage() {
   return (
-    <div>
-      <h1>Hello, WOrld</h1>
-    </div>
+    <>
+      <Head title="" />
+      <Home />
+    </>
   );
 }
