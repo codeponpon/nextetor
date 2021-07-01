@@ -3,9 +3,14 @@ import { ServerlessMysql } from "serverless-mysql";
 import moment from "moment";
 import { OkPacket } from "mysql";
 import { UserInputError } from "apollo-server-errors";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import faker from "faker";
 
 interface ApollowContext {
   db: ServerlessMysql;
+  prisma: PrismaClient;
 }
 
 interface UserDbRow {
@@ -26,6 +31,34 @@ const getUserById = async (id: number, db: ServerlessMysql) => {
     [id]
   );
   return user[0];
+};
+
+const expiresIn = "1 day";
+const createUserByParams = async (
+  db: ServerlessMysql,
+  prisma: PrismaClient,
+  params: any
+) => {
+  const user = await prisma.user.create({
+    data: {
+      username: params.username,
+      password: await bcrypt.hash(params.password, 10),
+      status: params.status,
+      createdBy: params.createdBy,
+      profile: {
+        ...params.profile,
+      },
+    },
+  });
+
+  const userWithToken = {
+    ...user,
+    token: jwt.sign({ userId: user.id }, process.env.APP_SECRET, {
+      expiresIn,
+    }),
+  };
+
+  return userWithToken;
 };
 
 export const resolvers: Resolvers<ApollowContext> = {
@@ -62,25 +95,7 @@ export const resolvers: Resolvers<ApollowContext> = {
   },
   Mutation: {
     async createUser(parent, args, context) {
-      const now = moment();
-      const user = await context.db.query<OkPacket>(
-        "INSERT INTO User(username, password, status, createdBy) VALUES(?, ?, ?, ?)",
-        [
-          args.input.username,
-          args.input.password,
-          UserStatus.Active,
-          CreatedBy.Admin,
-        ]
-      );
-      await context.db.end();
-      return {
-        id: user.insertId,
-        username: args.input.username,
-        password: args.input.password,
-        status: UserStatus.Active,
-        createdBy: CreatedBy.Admin,
-        createdAt: now.toString(),
-      };
+      return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {
       const columns: string[] = [];
@@ -111,6 +126,25 @@ export const resolvers: Resolvers<ApollowContext> = {
       }
       await context.db.query("DELETE FROM User WHERE id = ?", [args.id]);
       return user;
+    },
+    async signIn(parent, args, context) {
+      const user = await context.prisma.user.findUnique({
+        where: { username: args.input.username },
+      });
+
+      if (!user) throw new UserInputError("Could not found the user!");
+
+      const isValid = await bcrypt.compare(args.input.password, user.password);
+      if (!isValid) throw new Error("Wrong Password");
+
+      const userWithToken = {
+        ...user,
+        token: jwt.sign({ userId: user.id }, process.env.APP_SECRET, {
+          expiresIn,
+        }),
+      };
+
+      return userWithToken;
     },
   },
 };

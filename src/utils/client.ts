@@ -7,8 +7,8 @@ let apolloClient: ApolloClient<MyApolloCache> | undefined;
 function createIsomorphLink() {
   if (typeof window === "undefined") {
     const { SchemaLink } = require("@apollo/client/link/schema");
-    const { schema } = require("@/backend/schema");
-    const { db } = require("@/backend/db");
+    const { schema } = require("@/apollo/schema");
+    const { db } = require("@/apollo/db");
     return new SchemaLink({ schema, context: { db } });
   } else {
     const { HttpLink } = require("@apollo/client/link/http");

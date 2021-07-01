@@ -1,5 +1,6 @@
 declare namespace NodeJS {
   interface ProcessEnv {
+    APP_SECRET: string;
     DB_HOST: string;
     MYSQL_ROOT_USER: string;
     MYSQL_USER: string;
@@ -7,5 +8,6 @@ declare namespace NodeJS {
     MYSQL_ROOT_PASSWORD: string;
     MYSQL_DATABASE: string;
     MYSQL_PORT: number;
+    SALT_ROUNDS: number;
   }
 }

@@ -18,19 +18,25 @@ export const typeDefs = gql`
     status: UserStatus
     createdAt: String!
     updatedAt: String
+    token: String
   }
 
   input CreateUserInput {
     username: String!
     password: String!
-    status: UserStatus!
-    createdBy: CreatedBy!
+    status: UserStatus
+    createdBy: CreatedBy
   }
 
   input UpdateUserInput {
     id: Int!
     password: String
     status: UserStatus
+  }
+
+  input SignInInput {
+    username: String!
+    password: String!
   }
 
   type Query {
@@ -42,5 +48,6 @@ export const typeDefs = gql`
     createUser(input: CreateUserInput!): User
     updateUser(input: UpdateUserInput!): User
     deleteUser(id: Int!): User
+    signIn(input: SignInInput!): User
   }
 `;

@@ -17,8 +17,8 @@ export type Scalars = {
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
-  status: UserStatus;
-  createdBy: CreatedBy;
+  status?: Maybe<UserStatus>;
+  createdBy?: Maybe<CreatedBy>;
 };
 
 export enum CreatedBy {
@@ -31,6 +31,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
   deleteUser?: Maybe<User>;
+  signIn?: Maybe<User>;
 };
 
 
@@ -46,6 +47,11 @@ export type MutationUpdateUserArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationSignInArgs = {
+  input: SignInInput;
 };
 
 export type Query = {
@@ -65,6 +71,11 @@ export type QueryUserArgs = {
   id: Scalars['Int'];
 };
 
+export type SignInInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type UpdateUserInput = {
   id: Scalars['Int'];
   password?: Maybe<Scalars['String']>;
@@ -80,6 +91,7 @@ export type User = {
   status?: Maybe<UserStatus>;
   createdAt: Scalars['String'];
   updatedAt?: Maybe<Scalars['String']>;
+  token?: Maybe<Scalars['String']>;
 };
 
 export enum UserStatus {

@@ -16,8 +16,8 @@ export type Scalars = {
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
-  status: UserStatus;
-  createdBy: CreatedBy;
+  status?: Maybe<UserStatus>;
+  createdBy?: Maybe<CreatedBy>;
 };
 
 export enum CreatedBy {
@@ -30,6 +30,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
   deleteUser?: Maybe<User>;
+  signIn?: Maybe<User>;
 };
 
 
@@ -45,6 +46,11 @@ export type MutationUpdateUserArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['Int'];
+};
+
+
+export type MutationSignInArgs = {
+  input: SignInInput;
 };
 
 export type Query = {
@@ -64,6 +70,11 @@ export type QueryUserArgs = {
   id: Scalars['Int'];
 };
 
+export type SignInInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type UpdateUserInput = {
   id: Scalars['Int'];
   password?: Maybe<Scalars['String']>;
@@ -79,6 +90,7 @@ export type User = {
   status?: Maybe<UserStatus>;
   createdAt: Scalars['String'];
   updatedAt?: Maybe<Scalars['String']>;
+  token?: Maybe<Scalars['String']>;
 };
 
 export enum UserStatus {
@@ -171,6 +183,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Query: ResolverTypeWrapper<{}>;
+  SignInInput: SignInInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
@@ -184,6 +197,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Int: Scalars['Int'];
   Query: {};
+  SignInInput: SignInInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   Boolean: Scalars['Boolean'];
@@ -193,6 +207,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
+  signIn?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -208,6 +223,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   status?: Resolver<Maybe<ResolversTypes['UserStatus']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
