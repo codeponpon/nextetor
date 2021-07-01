@@ -1,12 +1,10 @@
 import { CreatedBy, Resolvers, UserStatus } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
-import moment from "moment";
-import { OkPacket } from "mysql";
+// import { OkPacket } from "mysql";
 import { UserInputError } from "apollo-server-errors";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import faker from "faker";
+import { PrismaClient } from "@prisma/client";
 
 interface ApollowContext {
   db: ServerlessMysql;
@@ -58,7 +56,17 @@ const createUserByParams = async (
     }),
   };
 
-  return userWithToken;
+  return {
+    id: userWithToken.id,
+    roleId: userWithToken.roleId,
+    username: userWithToken.username,
+    password: userWithToken.password,
+    createdBy: userWithToken.createdBy as CreatedBy,
+    status: userWithToken.status as UserStatus,
+    createdAt: userWithToken.createdAt.toString(),
+    updatedAt: userWithToken.updatedAt?.toString(),
+    token: userWithToken.token,
+  };
 };
 
 export const resolvers: Resolvers<ApollowContext> = {
@@ -144,7 +152,17 @@ export const resolvers: Resolvers<ApollowContext> = {
         }),
       };
 
-      return userWithToken;
+      return {
+        id: userWithToken.id,
+        roleId: userWithToken.roleId,
+        username: userWithToken.username,
+        password: userWithToken.password,
+        createdBy: userWithToken.createdBy as CreatedBy,
+        status: userWithToken.status as UserStatus,
+        createdAt: userWithToken.createdAt.toString(),
+        updatedAt: userWithToken.updatedAt?.toString(),
+        token: userWithToken.token,
+      };
     },
   },
 };
