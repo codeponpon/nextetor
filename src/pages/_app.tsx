@@ -1,12 +1,14 @@
 import React from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
-import AppLayout from "@/components/Layout/AppLayout";
+import { useApollo } from "@/utils/client";
+import { ApolloProvider } from "@apollo/client";
 require("src/styles/index.less");
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
+  const apolloClient = useApollo(pageProps.initialApolloState);
   return (
-    <>
+    <ApolloProvider client={apolloClient}>
       <Head>
         <meta
           name="viewport"
@@ -14,7 +16,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         />
       </Head>
       <Component {...pageProps} />
-    </>
+    </ApolloProvider>
   );
 };
 

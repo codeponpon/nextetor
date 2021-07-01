@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -33,7 +33,6 @@ enum RoleType {
 model User {
   id        Int        @id @default(autoincrement())
   profile   Profile?
-  profileId Int
   role      Role?      @relation(fields: [roleId], references: [id])
   roleId    Int?
   username  String     @unique
