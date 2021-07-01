@@ -1,36 +1,9 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { CreatedBy, UserStatus } from "@/generated/graphql";
 import { initializeApollo } from "@/utils/client";
-
-const UserQueryDocument = gql`
-  query Users {
-    users {
-      id
-      username
-      password
-      status
-      createdBy
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-interface UserQuery {
-  users: {
-    id: number;
-    username: string;
-    password: string;
-    status: UserStatus;
-    createdBy: CreatedBy;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-}
+import { UsersDocument, UsersQuery, useUsersQuery } from "@/generated/client";
 
 const Index = () => {
-  const { data } = useQuery<UserQuery>(UserQueryDocument);
+  const { data } = useUsersQuery();
   const users = data?.users;
   return (
     <>
@@ -50,8 +23,8 @@ const Index = () => {
 export const getStaticProps = async () => {
   const apolloClient = initializeApollo();
 
-  await apolloClient.query<UserQuery>({
-    query: UserQueryDocument,
+  await apolloClient.query<UsersQuery>({
+    query: UsersDocument,
   });
 
   return {

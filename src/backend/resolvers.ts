@@ -1,4 +1,4 @@
-import { CreatedBy, Resolvers, UserStatus } from "@/generated/graphql";
+import { CreatedBy, Resolvers, UserStatus } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
 import moment from "moment";
 import { OkPacket } from "mysql";
