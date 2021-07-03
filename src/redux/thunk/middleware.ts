@@ -1,8 +1,6 @@
-// import fetchAPI from "@/utils/fetch-api";
-
 import { ActionType } from "../actions/types";
 
-const loginApi = async (dataApi: any, dispatch: any) => {
+const internalProcess = async (dataApi: any, dispatch: any) => {
   const {
     action,
     payload = {},
@@ -18,11 +16,6 @@ const loginApi = async (dataApi: any, dispatch: any) => {
     if (beforeCallType) {
       dispatch({ type: beforeCallType });
     }
-
-    // const response = await fetchAPI({
-    //   action,
-    //   payload,
-    // });
 
     next(null, payload);
 
@@ -47,7 +40,7 @@ const middleware =
     console.log("Action ", action);
     switch (action.type) {
       case ActionType.INTERNAL_REQUEST:
-        return loginApi(action.payload, dispatch);
+        return internalProcess(action.payload, dispatch);
       default:
         return next(action);
     }

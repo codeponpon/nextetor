@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React from "react";
+import React, { useCallback } from "react";
 
 import { Menu, Dropdown, Modal } from "antd";
 
@@ -15,6 +15,8 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import Avatar from "@/components/Avatar";
 
 import classes from "./style.module.less";
+import { useDispatch } from "react-redux";
+import { actionLogout } from "@/redux/actions/auth";
 
 interface IProps {
   style?: any;
@@ -22,13 +24,18 @@ interface IProps {
 
 const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
   const vip = true;
-  const handleLogout = React.useCallback(async () => {
+  const dispatch = useDispatch();
+  const handleLogout = useCallback(async () => {
     Modal.confirm({
       title: "Are you sure?",
       icon: <ExclamationCircleOutlined />,
       // content: 'Are you sure?',
       onOk: async () => {
-        Router.push("/login");
+        await dispatch(
+          await actionLogout(() => {
+            Router.push("/login");
+          })
+        );
       },
       onCancel() {
         console.log("Cancel");

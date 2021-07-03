@@ -13,3 +13,16 @@ export const actionGetUserAuth = async (next: () => void) => {
     },
   };
 };
+
+export const actionLogout = async (next: () => void) => {
+  return {
+    type: ActionType.INTERNAL_REQUEST,
+    payload: {
+      successType: ActionType.LOGOUT_SUCCESS,
+      next: async () => {
+        AuthStorage.destroy();
+        next();
+      },
+    },
+  };
+};
