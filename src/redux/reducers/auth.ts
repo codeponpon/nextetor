@@ -16,13 +16,16 @@ export const initialState = { isLoading: false };
 const reducer = (
   state: AuthState = initialState,
   { type, payload }: AnyAction
-): AuthState => {
+) => {
   console.log("---- Reducer ----");
+  console.log("TYPE: ", type);
+
   switch (type) {
+    case ActionType.LOGIN_FAILED:
     case ActionType.LOGIN_SUCCESS:
       return payload;
-    case ActionType.LOGIN_FAILED:
-      return { ...state };
+    case ActionType.LOGIN_SUCCESS:
+      return {};
     default:
       return state;
   }
