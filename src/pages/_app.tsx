@@ -1,6 +1,8 @@
 import React from "react";
 import Head from "next/head";
 import type { AppProps } from "next/app";
+
+import wrapperStore from "@/redux";
 import { useApollo } from "@/utils/client";
 import { ApolloProvider } from "@apollo/client";
 require("src/styles/index.less");
@@ -20,4 +22,4 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default MyApp;
+export default wrapperStore.withRedux(MyApp);
