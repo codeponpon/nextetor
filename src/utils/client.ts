@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { PrismaClient } from "@prisma/client";
 
 type MyApolloCache = any;
 let apolloClient: ApolloClient<MyApolloCache> | undefined;
@@ -9,7 +10,8 @@ function createIsomorphLink() {
     const { SchemaLink } = require("@apollo/client/link/schema");
     const { schema } = require("@/apollo/schema");
     const { db } = require("@/apollo/db");
-    return new SchemaLink({ schema, context: { db } });
+    const prisma = new PrismaClient();
+    return new SchemaLink({ schema, context: { db, prisma } });
   } else {
     const { HttpLink } = require("@apollo/client/link/http");
     return new HttpLink({

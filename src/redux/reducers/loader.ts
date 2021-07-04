@@ -19,7 +19,6 @@ const reducer = (state: IProps = initialState, action: AnyAction) => {
     case ActionType.STOP_LOADING:
       return { sending: false };
     case ActionType.REQUEST_ERROR:
-      console.log("REQUEST ERROR: ", action?.payload);
       if (process.browser) {
         notification.error({
           message: "Oops!",

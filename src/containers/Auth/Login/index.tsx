@@ -15,12 +15,6 @@ const SIGN_IN = gql`
   mutation SingIn($input: SignInInput!) {
     signIn(input: $input) {
       id
-      username
-      password
-      status
-      createdBy
-      createdAt
-      updatedAt
       token
       role {
         name
@@ -31,8 +25,7 @@ const SIGN_IN = gql`
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [signIn, { loading: loadingSignIn }] = useMutation(SIGN_IN);
+  const [signIn, { loading, data }] = useMutation(SIGN_IN);
 
   useEffect(() => {
     if (AuthStorage.loggedIn) {
@@ -42,8 +35,7 @@ const Login: React.FC = () => {
 
   const onFinish = async (values: ILogin) => {
     try {
-      setLoading(true);
-      const { data } = await signIn({ variables: { input: values } });
+      await signIn({ variables: { input: values } });
       const user = data.signIn;
       AuthStorage.value = {
         token: user.token,
@@ -54,10 +46,8 @@ const Login: React.FC = () => {
     } catch (error) {
       await dispatch({
         type: ActionType.REQUEST_ERROR,
-        payload: error.message,
+        payload: error,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
