@@ -1,14 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
 
 import { Form, Input, Button } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "@/components/Layout/Logo";
 import classes from "./style.module.less";
+import AuthStorage from "@/utils/auth-storage";
+import router from "next/router";
+import { ActionType, ILogin } from "@/redux/actions/types";
+import { gql, useMutation } from "@apollo/client";
 
-const Login = () => {
+const SIGN_IN = gql`
+  mutation SingIn($input: SignInInput!) {
+    signIn(input: $input) {
+      id
+      username
+      password
+      status
+      createdBy
+      createdAt
+      updatedAt
+      token
+    }
+  }
+`;
+
+const Login: React.FC = () => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const onFinish = () => {};
+  const [signIn, { loading: loadingSignIn }] = useMutation(SIGN_IN);
+
+  useEffect(() => {
+    if (AuthStorage.loggedIn) {
+      router.push("/");
+    }
+  }, []);
+
+  const onFinish = async (values: ILogin) => {
+    try {
+      setLoading(true);
+      const { data } = await signIn({ variables: { input: values } });
+      const user = data.signIn;
+      AuthStorage.value = {
+        token: user.token,
+        userId: user.id,
+      };
+      router.push("/");
+    } catch (error) {
+      await dispatch({
+        type: ActionType.REQUEST_ERROR,
+        payload: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -44,21 +91,21 @@ const Login = () => {
               <Logo width={150} height={150} />
             </div>
             <Form.Item
-              name="email"
+              name="username"
               rules={[
                 {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
+                  type: "string",
+                  message: "The input is not valid Username",
                 },
                 {
                   required: true,
-                  message: "Please input your E-mail!",
+                  message: "Please input your Username",
                 },
               ]}
             >
               <Input
                 prefix={<UserOutlined className="site-form-item-icon" />}
-                placeholder="Email"
+                placeholder="Username"
               />
             </Form.Item>
             <Form.Item
@@ -93,11 +140,6 @@ const Login = () => {
             >
               Login
             </Button>
-
-            {/* <div className="mt-5">
-              <div className="class">Email: admin@gmail.com</div>
-              <div className="class">Password: admin123</div>
-            </div> */}
           </Form>
         </div>
         <div className="py-2">

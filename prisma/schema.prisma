@@ -2,10 +2,71 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+// START ENUM
+enum userStatus {
+  ACTIVE
+  INACTIVE
+  BAN
+}
+
+enum createdBy {
+  WEBSITE
+  ADMIN
+}
+
+enum RoleType {
+  ADMIN
+  CALL_CENTER
+}
+
+// END ENUM
+
+// START MODEL
+model User {
+  id        Int        @id @default(autoincrement())
+  profile   Profile?
+  role      Role?      @relation(fields: [roleId], references: [id])
+  roleId    Int?
+  username  String     @unique
+  password  String
+  createdBy createdBy? @default(WEBSITE)
+  status    userStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+
+  @@index([username])
+}
+
+model Profile {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int // relation scalar field (used in the `@relation` attribute above)
+  mobile    String    @unique
+  firstName String?
+  lastName  String?
+  birthday  DateTime?
+  lineID    String?
+  email     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([mobile])
+}
+
+model Role {
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  users          User[]
+  type           RoleType  @default(ADMIN)
+  thirdPartyInfo String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
 }
