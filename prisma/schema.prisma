@@ -24,6 +24,8 @@ enum createdBy {
 
 enum RoleType {
   ADMIN
+  AGENT
+  MEMBER
   CALL_CENTER
 }
 

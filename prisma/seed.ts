@@ -1,7 +1,8 @@
-const { PrismaClient } = require('@prisma/client')
-const {hash} = require("bcrypt");
-const faker = require("faker");
-const prisma = new PrismaClient()
+import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt";
+import faker from "faker";
+
+const prisma = new PrismaClient();
 
 const main = async () => {
   const superman = await prisma.user.upsert({
@@ -15,9 +16,15 @@ const main = async () => {
           mobile: "0987654321",
           firstName: "Clark",
           lastName: "Kent",
-          birthday: faker.date.past(1977),
+          birthday: faker.date.recent(99),
           lineID: "",
           email: "superadmin@gmail.com",
+        },
+      },
+      role: {
+        create: {
+          name: "super_admin",
+          type: "ADMIN",
         },
       },
     },

@@ -7,8 +7,8 @@ export const actionGetUserAuth = async (next: () => void) => {
   return {
     type: ActionType.INTERNAL_REQUEST,
     payload: {
-      url: "/users/" + AuthStorage.userId,
-      successType: "GET_USER_AUTH_SUCCESS",
+      action: ActionType.LOGIN,
+      successType: ActionType.GET_USER_AUTH_SUCCESS,
       next,
     },
   };

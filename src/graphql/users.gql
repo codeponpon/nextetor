@@ -7,5 +7,24 @@ query Users {
     createdBy
     createdAt
     updatedAt
+    profile {
+      id
+      mobile
+      firstName
+      lastName
+      birthday
+      lineID
+      email
+      createdAt
+      updatedAt
+    }
+    role {
+      id
+      name
+      type
+      thirdPartyInfo
+      createdAt
+      updatedAt
+    }
   }
 }

@@ -22,6 +22,9 @@ const SIGN_IN = gql`
       createdAt
       updatedAt
       token
+      role {
+        name
+      }
     }
   }
 `;
@@ -45,6 +48,7 @@ const Login: React.FC = () => {
       AuthStorage.value = {
         token: user.token,
         userId: user.id,
+        role: user?.role.name,
       };
       router.push("/");
     } catch (error) {

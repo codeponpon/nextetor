@@ -1,4 +1,12 @@
-import { CreatedBy, Resolvers, UserStatus } from "@/generated/backend";
+import {
+  CreatedBy,
+  Profile,
+  Resolvers,
+  Role,
+  RoleType,
+  User,
+  UserStatus,
+} from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
 // import { OkPacket } from "mysql";
 import { UserInputError } from "apollo-server-errors";
@@ -11,24 +19,64 @@ interface ApollowContext {
   prisma: PrismaClient;
 }
 
-interface UserDbRow {
-  id: number;
-  username: string;
-  password: string;
-  createdBy: CreatedBy;
-  status: UserStatus;
-  createdAt: string;
-}
+type UsersDbQueryResult = User[];
+type UserDbQueryResult = User[];
 
-type UsersDbQueryResult = UserDbRow[];
-type UserDbQueryResult = UserDbRow[];
+const findUsers = async (prisma: PrismaClient, args: any) => {
+  const { status, createdBy } = args;
+  const users = await prisma.user.findMany({
+    where: { status: status, createdBy: createdBy },
+    include: { profile: true, role: true },
+  });
 
-const getUserById = async (id: number, db: ServerlessMysql) => {
-  const user = await db.query<UserDbQueryResult>(
-    "SELECT * FROM User WHERE id = ?",
-    [id]
-  );
-  return user[0];
+  return users.map((user) => ({
+    ...user,
+    status: user.status as UserStatus,
+    createdBy: user.createdBy as CreatedBy,
+    createdAt: user.createdAt.toString(),
+    updatedAt: user.updatedAt && user.updatedAt.toString(),
+    profile: {
+      ...user.profile,
+      birthday: user.profile?.birthday?.toString(),
+      createdAt: user.profile?.createdAt.toString(),
+    },
+    role: {
+      ...user.role,
+      type: user?.role?.type as RoleType,
+      createdAt: user.role?.createdAt.toString(),
+    },
+  }));
+};
+
+const getUserById = async (
+  id: number,
+  db: ServerlessMysql,
+  prisma: PrismaClient
+) => {
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+    include: { profile: true, role: true },
+  });
+
+  if (!user) throw new UserInputError("Could not found the user!");
+
+  return {
+    ...user,
+    status: user.status as UserStatus,
+    createdBy: user.createdBy as CreatedBy,
+    createdAt: user.createdAt.toString(),
+    updatedAt: user.updatedAt && user.updatedAt.toString(),
+    profile: {
+      ...user.profile,
+      birthday: user.profile?.birthday?.toString(),
+      createdAt: user.profile?.createdAt.toString(),
+    },
+    role: {
+      ...user.role,
+      type: user?.role?.type as RoleType,
+      createdAt: user.role?.createdAt.toString(),
+    },
+  };
 };
 
 const expiresIn = "1 day";
@@ -72,33 +120,11 @@ const createUserByParams = async (
 export const resolvers: Resolvers<ApollowContext> = {
   Query: {
     async users(parent, args, context) {
-      const { status, createdBy } = args;
-      let hasParams = false;
-      let query = "SELECT * FROM User";
-      let queryParams = [];
-      query = status || createdBy ? query + " WHERE " : query;
-
-      if (status) {
-        query += hasParams ? " AND status = ?" : " status = ?";
-        queryParams.push(status);
-        hasParams = true;
-      }
-
-      if (createdBy) {
-        query += hasParams ? " AND createdBy = ?" : " createdBy = ?";
-        queryParams.push(createdBy);
-        hasParams = true;
-      }
-
-      const users = await context.db.query<UsersDbQueryResult>(
-        query,
-        queryParams
-      );
-      await context.db.end();
+      const users = await findUsers(context.prisma, args);
       return users;
     },
     async user(parent, args, context) {
-      return await getUserById(args.id, context.db);
+      return await getUserById(args.id, context.db, context.prisma);
     },
   },
   Mutation: {
@@ -128,7 +154,7 @@ export const resolvers: Resolvers<ApollowContext> = {
       return await getUserById(args.input.id, context.db);
     },
     async deleteUser(parent, args, context) {
-      const user = await getUserById(args.id, context.db);
+      const user = await getUserById(args.id, context.db, context.prisma);
       if (!user) {
         throw new UserInputError("Could not found the user!");
       }
@@ -138,6 +164,7 @@ export const resolvers: Resolvers<ApollowContext> = {
     async signIn(parent, args, context) {
       const user = await context.prisma.user.findUnique({
         where: { username: args.input.username },
+        include: { profile: true, role: true },
       });
 
       if (!user) throw new UserInputError("Could not found the user!");
@@ -154,7 +181,6 @@ export const resolvers: Resolvers<ApollowContext> = {
 
       return {
         id: userWithToken.id,
-        roleId: userWithToken.roleId,
         username: userWithToken.username,
         password: userWithToken.password,
         createdBy: userWithToken.createdBy as CreatedBy,
@@ -162,6 +188,16 @@ export const resolvers: Resolvers<ApollowContext> = {
         createdAt: userWithToken.createdAt.toString(),
         updatedAt: userWithToken.updatedAt?.toString(),
         token: userWithToken.token,
+        profile: {
+          ...user.profile,
+          birthday: user.profile?.birthday?.toString(),
+          createdAt: user.profile?.createdAt.toString(),
+        },
+        role: {
+          ...user.role,
+          type: user?.role?.type as RoleType,
+          createdAt: user.role?.createdAt.toString(),
+        },
       };
     },
   },

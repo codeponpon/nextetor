@@ -1,6 +1,8 @@
 import { gql } from "apollo-server-micro";
 
 export const typeDefs = gql`
+  scalar Date
+
   enum CreatedBy {
     WEBSITE
     ADMIN
@@ -10,15 +12,47 @@ export const typeDefs = gql`
     INACTIVE
     BAN
   }
+  enum RoleType {
+    ADMIN
+    AGENT
+    MEMBER
+    CALL_CENTER
+  }
+
   type User {
     id: Int
     username: String
     password: String
     createdBy: CreatedBy
     status: UserStatus
-    createdAt: String!
-    updatedAt: String
+    createdAt: Date!
+    updatedAt: Date
     token: String
+    profile: Profile
+    role: Role
+  }
+
+  type Role {
+    id: Int
+    users: User
+    name: String
+    type: RoleType!
+    thirdPartyInfo: String
+    createdAt: Date!
+    updatedAt: Date
+  }
+
+  type Profile {
+    id: Int
+    user: User
+    mobile: String
+    firstName: String
+    lastName: String
+    birthday: String
+    lineID: String
+    email: String
+    createdAt: Date!
+    updatedAt: Date
   }
 
   input CreateUserInput {

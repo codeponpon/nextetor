@@ -17,7 +17,8 @@
     "build:staging": "MODE=staging node bin/build",
     "start:staging": "MODE=staging node bin/start",
     "-------------------------------- CODEGEN ----": "----",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\""
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
