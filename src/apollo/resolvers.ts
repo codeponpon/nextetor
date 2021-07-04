@@ -151,7 +151,7 @@ export const resolvers: Resolvers<ApollowContext> = {
         sqlParams
       );
       await context.db.end();
-      return await getUserById(args.input.id, context.db);
+      return await getUserById(args.input.id, context.db, context.prisma);
     },
     async deleteUser(parent, args, context) {
       const user = await getUserById(args.id, context.db, context.prisma);
