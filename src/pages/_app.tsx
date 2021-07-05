@@ -14,7 +14,12 @@ import AuthStorage from "@/utils/auth-storage";
 import Loading from "@/components/Loading";
 require("src/styles/index.less");
 
-const urlsIgnore = ["/forgot-password", "/login", "/reset-password"];
+const urlsIgnore = [
+  "/forgot-password",
+  "/login",
+  "/reset-password",
+  "/forbidden",
+];
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();

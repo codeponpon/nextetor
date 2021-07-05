@@ -36,13 +36,15 @@ const Login: React.FC = () => {
   const onFinish = async (values: ILogin) => {
     try {
       await signIn({ variables: { input: values } });
-      const user = data.signIn;
-      AuthStorage.value = {
-        token: user.token,
-        userId: user.id,
-        role: user?.role.name,
-      };
-      router.push("/");
+      const user = data?.signIn;
+      if (!loading) {
+        AuthStorage.value = {
+          token: user.token,
+          userId: user.id,
+          role: user?.role.name,
+        };
+        router.push("/");
+      }
     } catch (error) {
       await dispatch({
         type: ActionType.REQUEST_ERROR,
