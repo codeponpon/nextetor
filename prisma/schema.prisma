@@ -23,6 +23,7 @@ enum createdBy {
 }
 
 enum RoleType {
+  SUPER_ADMIN
   ADMIN
   AGENT
   MEMBER
@@ -35,8 +36,8 @@ enum RoleType {
 model User {
   id        Int        @id @default(autoincrement())
   profile   Profile?
-  role      Role?      @relation(fields: [roleId], references: [id])
-  roleId    Int?
+  role      Role       @relation(fields: [roleId], references: [id])
+  roleId    Int
   username  String     @unique
   password  String
   createdBy createdBy? @default(WEBSITE)
@@ -67,7 +68,7 @@ model Role {
   id             Int       @id @default(autoincrement())
   name           String    @unique
   users          User[]
-  type           RoleType  @default(ADMIN)
+  type           RoleType  @default(MEMBER)
   thirdPartyInfo String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt

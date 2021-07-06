@@ -13,6 +13,7 @@ export const typeDefs = gql`
     BAN
   }
   enum RoleType {
+    SUPER_ADMIN
     ADMIN
     AGENT
     MEMBER

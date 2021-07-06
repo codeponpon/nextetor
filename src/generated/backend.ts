@@ -98,6 +98,7 @@ export type Role = {
 };
 
 export enum RoleType {
+  SuperAdmin = 'SUPER_ADMIN',
   Admin = 'ADMIN',
   Agent = 'AGENT',
   Member = 'MEMBER',

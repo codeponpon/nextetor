@@ -1,10 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, RoleType } from "@prisma/client";
 import { hash } from "bcrypt";
 import faker from "faker";
 
 const prisma = new PrismaClient();
+const roles = require("./seeds/roles.json");
 
 const main = async () => {
+  const initRole = await prisma.role.createMany({
+    data: roles,
+    skipDuplicates: true,
+  });
+
+  const superAdminRole = await prisma.role.findUnique({
+    where: { name: "super_admin" },
+  });
   const superman = await prisma.user.upsert({
     where: { username: "superman" },
     update: {},
@@ -21,16 +30,57 @@ const main = async () => {
           email: "superadmin@gmail.com",
         },
       },
-      role: {
-        create: {
-          name: "super_admin",
-          type: "ADMIN",
-        },
-      },
+      roleId: superAdminRole?.id,
     },
   });
 
-  console.log({ superman });
+  const adminRole = await prisma.role.findUnique({
+    where: { name: "admin" },
+  });
+  const admin = await prisma.user.upsert({
+    where: { username: "admin" },
+    update: {},
+    create: {
+      username: "admin",
+      password: await hash("asdqwe123", 10),
+      profile: {
+        create: {
+          mobile: "0987654322",
+          firstName: "ad",
+          lastName: "min",
+          birthday: faker.date.recent(99),
+          lineID: "",
+          email: "admin@gmail.com",
+        },
+      },
+      roleId: adminRole?.id,
+    },
+  });
+
+  const agentRole = await prisma.role.findUnique({
+    where: { name: "agent" },
+  });
+  const agent = await prisma.user.upsert({
+    where: { username: "agent" },
+    update: {},
+    create: {
+      username: "agent",
+      password: await hash("asdqwe123", 10),
+      profile: {
+        create: {
+          mobile: "0987654323",
+          firstName: "a",
+          lastName: "gent",
+          birthday: faker.date.recent(99),
+          lineID: "",
+          email: "agent@gmail.com",
+        },
+      },
+      roleId: agentRole?.id,
+    },
+  });
+
+  console.log({ initRole, superman, admin, agent });
 };
 
 main()
