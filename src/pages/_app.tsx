@@ -52,7 +52,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useAsync(async () => {
     if (AuthStorage.loggedIn) {
       try {
-        router.push("/");
+        router.push(router.pathname);
       } catch (error) {
         if (
           (error.status === 403 || error.status === 401) &&
@@ -67,7 +67,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         }
       }
 
-      setTimeout(() => setAwaitLoading(false), 500);
+      setTimeout(() => setAwaitLoading(false), 600);
     } else {
       setTimeout(() => setAwaitLoading(false), 600);
     }

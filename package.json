@@ -38,7 +38,7 @@
     "antd": "^4.16.5",
     "apollo-server-micro": "^2.25.2",
     "bcrypt": "^5.0.1",
-    "dayjs": "^1.10.5",
+    "dayjs": "^1.10.6",
     "faker": "^5.5.3",
     "graphql": "^15.5.1",
     "graphql-tools": "^7.0.5",

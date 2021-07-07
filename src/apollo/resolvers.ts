@@ -1,10 +1,8 @@
 import {
   CreatedBy,
-  Profile,
   Resolvers,
   Role,
   RoleType,
-  User,
   UserStatus,
 } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
@@ -19,16 +17,16 @@ interface ApollowContext {
   prisma: PrismaClient;
 }
 
-type UsersDbQueryResult = User[];
-type UserDbQueryResult = User[];
-
 const findUsers = async (prisma: PrismaClient, args: any) => {
-  const { status, createdBy } = args;
+  const { status, createdBy, offset, limit } = args;
+  console.log("Find user argument: ", typeof offset, typeof limit);
   const users = await prisma.user.findMany({
+    skip: offset,
+    take: limit,
     where: { status: status, createdBy: createdBy },
     include: { profile: true, role: true },
   });
-
+  console.log("Users ", users);
   return users.map((user) => ({
     ...user,
     status: user.status as UserStatus,
@@ -63,6 +61,7 @@ const getUserById = async (
   return {
     ...user,
     status: user.status as UserStatus,
+    roleId: user.roleId,
     createdBy: user.createdBy as CreatedBy,
     createdAt: user.createdAt.toString(),
     updatedAt: user.updatedAt && user.updatedAt.toString(),
@@ -94,6 +93,7 @@ const createUserByParams = async (
       profile: {
         ...params.profile,
       },
+      roleId: params.roleId,
     },
   });
 
@@ -125,6 +125,10 @@ export const resolvers: Resolvers<ApollowContext> = {
     },
     async user(parent, args, context) {
       return await getUserById(args.id, context.db, context.prisma);
+    },
+    async roles(parent, args, context) {
+      const roles = await context.prisma.role.findMany();
+      return roles.map((role) => ({ ...role, type: role.type as RoleType }));
     },
   },
   Mutation: {

@@ -10,77 +10,87 @@ const main = async () => {
     data: roles,
     skipDuplicates: true,
   });
+  console.log({ initRole });
 
-  const superAdminRole = await prisma.role.findUnique({
-    where: { name: "super_admin" },
-  });
-  const superman = await prisma.user.upsert({
-    where: { username: "superman" },
-    update: {},
-    create: {
-      username: "superman",
-      password: await hash("asdqwe123", 10),
-      profile: {
+  if (initRole) {
+    const superAdminRole = await prisma.role.findUnique({
+      where: { name: "super_admin" },
+    });
+    if (superAdminRole) {
+      const superman = await prisma.user.upsert({
+        where: { username: "superman" },
+        update: {},
         create: {
-          mobile: "0987654321",
-          firstName: "Clark",
-          lastName: "Kent",
-          birthday: faker.date.recent(99),
-          lineID: "",
-          email: "superadmin@gmail.com",
+          username: "superman",
+          password: await hash("asdqwe123", 10),
+          profile: {
+            create: {
+              mobile: "0987654321",
+              firstName: "Clark",
+              lastName: "Kent",
+              birthday: faker.date.recent(99),
+              lineID: "",
+              email: "superadmin@gmail.com",
+            },
+          },
+          roleId: superAdminRole?.id,
         },
-      },
-      roleId: superAdminRole?.id,
-    },
-  });
+      });
+      console.log({ superman });
+    }
 
-  const adminRole = await prisma.role.findUnique({
-    where: { name: "admin" },
-  });
-  const admin = await prisma.user.upsert({
-    where: { username: "admin" },
-    update: {},
-    create: {
-      username: "admin",
-      password: await hash("asdqwe123", 10),
-      profile: {
+    const adminRole = await prisma.role.findUnique({
+      where: { name: "admin" },
+    });
+    if (adminRole) {
+      const admin = await prisma.user.upsert({
+        where: { username: "admin" },
+        update: {},
         create: {
-          mobile: "0987654322",
-          firstName: "ad",
-          lastName: "min",
-          birthday: faker.date.recent(99),
-          lineID: "",
-          email: "admin@gmail.com",
+          username: "admin",
+          password: await hash("asdqwe123", 10),
+          profile: {
+            create: {
+              mobile: "0987654322",
+              firstName: "ad",
+              lastName: "min",
+              birthday: faker.date.recent(99),
+              lineID: "",
+              email: "admin@gmail.com",
+            },
+          },
+          roleId: adminRole?.id,
         },
-      },
-      roleId: adminRole?.id,
-    },
-  });
+      });
+      console.log({ admin });
+    }
 
-  const agentRole = await prisma.role.findUnique({
-    where: { name: "agent" },
-  });
-  const agent = await prisma.user.upsert({
-    where: { username: "agent" },
-    update: {},
-    create: {
-      username: "agent",
-      password: await hash("asdqwe123", 10),
-      profile: {
+    const agentRole = await prisma.role.findUnique({
+      where: { name: "agent" },
+    });
+    if (agentRole) {
+      const agent = await prisma.user.upsert({
+        where: { username: "agent" },
+        update: {},
         create: {
-          mobile: "0987654323",
-          firstName: "a",
-          lastName: "gent",
-          birthday: faker.date.recent(99),
-          lineID: "",
-          email: "agent@gmail.com",
+          username: "agent",
+          password: await hash("asdqwe123", 10),
+          profile: {
+            create: {
+              mobile: "0987654323",
+              firstName: "a",
+              lastName: "gent",
+              birthday: faker.date.recent(99),
+              lineID: "",
+              email: "agent@gmail.com",
+            },
+          },
+          roleId: agentRole?.id,
         },
-      },
-      roleId: agentRole?.id,
-    },
-  });
-
-  console.log({ initRole, superman, admin, agent });
+      });
+      console.log({ agent });
+    }
+  }
 };
 
 main()

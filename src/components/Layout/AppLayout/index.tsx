@@ -4,13 +4,16 @@ import Link from "next/link";
 import Router from "next/router";
 import Image from "next/image";
 
-import { Layout, BackTop } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import { Layout, BackTop, Breadcrumb } from "antd";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  DashboardOutlined,
+} from "@ant-design/icons";
 
 import classes from "./style.module.less";
 
 import Head from "@/components/Head";
-import Home from "@/containers/Home";
 import Sidebar from "src/components/Layout/Sidebar";
 import Header from "src/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
@@ -19,6 +22,7 @@ import Notifications from "@/components/Notifications";
 
 export interface IProps {
   children: React.ReactNode;
+  title?: string;
   style?: React.CSSProperties;
   alwaysDarkMode?: boolean;
 }
@@ -36,6 +40,7 @@ const { Content, Sider } = Layout;
 const AppLayout: React.FC<IProps> = ({
   children,
   style,
+  title,
   alwaysDarkMode,
 }: IProps) => {
   const isClient = useIsClient();
@@ -155,6 +160,16 @@ const AppLayout: React.FC<IProps> = ({
               onClick={() => setMobiShow(false)}
             />
           )}
+          <Breadcrumb className="p-3">
+            <Breadcrumb.Item>
+              <Link href="/">
+                <a>
+                  <DashboardOutlined /> Dashboard
+                </a>
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>{title}</Breadcrumb.Item>
+          </Breadcrumb>
           <Content
             style={{
               margin: 20,

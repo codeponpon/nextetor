@@ -1,6 +1,7 @@
 query User($id: Int!) {
   user(id: $id) {
     id
+    roleId
     username
     password
     status

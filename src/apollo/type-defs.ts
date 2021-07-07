@@ -26,11 +26,12 @@ export const typeDefs = gql`
     password: String
     createdBy: CreatedBy
     status: UserStatus
-    createdAt: Date!
+    createdAt: Date
     updatedAt: Date
     token: String
     profile: Profile
     role: Role
+    roleId: Int
   }
 
   type Role {
@@ -75,8 +76,14 @@ export const typeDefs = gql`
   }
 
   type Query {
-    users(status: UserStatus, createdBy: CreatedBy): [User!]!
+    users(
+      status: UserStatus
+      createdBy: CreatedBy
+      offset: Int
+      limit: Int
+    ): [User!]!
     user(id: Int!): User
+    roles: [Role!]!
   }
 
   type Mutation {

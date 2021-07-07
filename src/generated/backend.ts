@@ -73,12 +73,15 @@ export type Query = {
   __typename?: 'Query';
   users: Array<User>;
   user?: Maybe<User>;
+  roles: Array<Role>;
 };
 
 
 export type QueryUsersArgs = {
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
 };
 
 
@@ -123,11 +126,12 @@ export type User = {
   password?: Maybe<Scalars['String']>;
   createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
-  createdAt: Scalars['Date'];
+  createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
   token?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
   role?: Maybe<Role>;
+  roleId?: Maybe<Scalars['Int']>;
 };
 
 export enum UserStatus {
@@ -275,6 +279,7 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  roles?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
 };
 
 export type RoleResolvers<ContextType = any, ParentType extends ResolversParentTypes['Role'] = ResolversParentTypes['Role']> = {
@@ -294,11 +299,12 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['CreatedBy']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['UserStatus']>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
+  roleId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

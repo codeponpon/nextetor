@@ -1,6 +1,7 @@
-query Users {
-  users {
+query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int) {
+  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit) {
     id
+    roleId
     username
     password
     status

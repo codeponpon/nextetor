@@ -74,12 +74,15 @@ export type Query = {
   __typename?: 'Query';
   users: Array<User>;
   user?: Maybe<User>;
+  roles: Array<Role>;
 };
 
 
 export type QueryUsersArgs = {
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
 };
 
 
@@ -124,11 +127,12 @@ export type User = {
   password?: Maybe<Scalars['String']>;
   createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
-  createdAt: Scalars['Date'];
+  createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
   token?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
   role?: Maybe<Role>;
+  roleId?: Maybe<Scalars['Int']>;
 };
 
 export enum UserStatus {
@@ -174,6 +178,17 @@ export type DeleteUserMutation = (
       { __typename?: 'Role' }
       & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
     )> }
+  )> }
+);
+
+export type RolesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RolesQuery = (
+  { __typename?: 'Query' }
+  & { roles: Array<(
+    { __typename?: 'Role' }
+    & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
   )> }
 );
 
@@ -226,7 +241,7 @@ export type UserQuery = (
   { __typename?: 'Query' }
   & { user?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'roleId' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
     & { profile?: Maybe<(
       { __typename?: 'Profile' }
       & Pick<Profile, 'id' | 'mobile' | 'firstName' | 'lastName' | 'birthday' | 'lineID' | 'email' | 'createdAt' | 'updatedAt'>
@@ -237,14 +252,19 @@ export type UserQuery = (
   )> }
 );
 
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type UsersQueryVariables = Exact<{
+  status?: Maybe<UserStatus>;
+  createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+}>;
 
 
 export type UsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'roleId' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
     & { profile?: Maybe<(
       { __typename?: 'Profile' }
       & Pick<Profile, 'id' | 'mobile' | 'firstName' | 'lastName' | 'birthday' | 'lineID' | 'email' | 'createdAt' | 'updatedAt'>
@@ -372,6 +392,45 @@ export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const RolesDocument = gql`
+    query Roles {
+  roles {
+    id
+    name
+    type
+    thirdPartyInfo
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useRolesQuery__
+ *
+ * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRolesQuery(baseOptions?: Apollo.QueryHookOptions<RolesQuery, RolesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
+      }
+export function useRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RolesQuery, RolesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
+        }
+export type RolesQueryHookResult = ReturnType<typeof useRolesQuery>;
+export type RolesLazyQueryHookResult = ReturnType<typeof useRolesLazyQuery>;
+export type RolesQueryResult = Apollo.QueryResult<RolesQuery, RolesQueryVariables>;
 export const SingInDocument = gql`
     mutation SingIn($input: SignInInput!) {
   signIn(input: $input) {
@@ -493,6 +552,7 @@ export const UserDocument = gql`
     query User($id: Int!) {
   user(id: $id) {
     id
+    roleId
     username
     password
     status
@@ -550,9 +610,10 @@ export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
 export const UsersDocument = gql`
-    query Users {
-  users {
+    query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int) {
+  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit) {
     id
+    roleId
     username
     password
     status
@@ -594,6 +655,10 @@ export const UsersDocument = gql`
  * @example
  * const { data, loading, error } = useUsersQuery({
  *   variables: {
+ *      status: // value for 'status'
+ *      createdBy: // value for 'createdBy'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */
