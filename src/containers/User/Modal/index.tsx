@@ -4,19 +4,20 @@ import {
   Form,
   Input,
   Modal,
-  Cascader,
-  DatePicker,
   FormInstance,
   Card,
   Select,
+  DatePicker,
 } from "antd";
-import { Role, RolesDocument, User } from "@/generated/client";
+import { RolesDocument, RoleType, User } from "@/generated/client";
 import dayjs from "dayjs";
 import { useQuery } from "@apollo/client";
-import { startCase } from "lodash";
+import { startCase, toLower } from "lodash";
+import AuthStorage from "@/utils/auth-storage";
+import moment from "moment";
 
 export interface IModalProps {
-  item: User;
+  item?: User;
   visible: boolean;
   destroyOnClose: boolean;
   maskClosable: boolean;
@@ -40,6 +41,7 @@ const formItemLayout = {
 };
 
 export const UserModal: React.FC<IModalProps> = (props) => {
+  const currentRole = AuthStorage.role;
   const { item, onOk, ...modalProps } = props;
   const { data, loading } = useQuery(RolesDocument);
   const formRef = createRef<FormInstance>();
@@ -58,8 +60,6 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         console.log("ERROR Info: ", errorInfo);
       });
   };
-
-  console.log("ITEM: ", item);
 
   return (
     <Modal {...modalProps} onOk={handleOk}>
@@ -85,7 +85,10 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Select placeholder={`Please select a role ${item.roleId}`}>
+          <Select
+            placeholder={`Please select a role ${item!.roleId}`}
+            disabled={currentRole !== toLower(RoleType.SuperAdmin)}
+          >
             {roles.map((role: any) => (
               <Option key={role.id} value={role.id}>
                 {startCase(role.name)}
@@ -95,30 +98,26 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         </FormItem>
         <Card title="Profile" bordered={false}>
           <FormItem
-            name="firstName"
+            name={["profile", "firstName"]}
             rules={[{ required: true }]}
             label={`First Name`}
-            initialValue={item?.profile?.firstName}
             hasFeedback
             {...formItemLayout}
           >
             <Input />
           </FormItem>
           <FormItem
-            name="lastName"
+            name={["profile", "lastName"]}
             rules={[{ required: true }]}
             label={`Last Name`}
-            initialValue={item?.profile?.lastName}
             hasFeedback
             {...formItemLayout}
           >
             <Input />
           </FormItem>
           <FormItem
-            name="lineId"
-            rules={[{ required: true }]}
+            name={["profile", "lineId"]}
             label={`Line ID`}
-            initialValue={item?.profile?.lineID}
             hasFeedback
             {...formItemLayout}
           >
@@ -126,17 +125,19 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           </FormItem>
           <FormItem
             name="birthday"
-            rules={[{ required: true }]}
+            initialValue={moment(item?.profile?.birthday)}
             label={`Birth Date`}
-            initialValue={dayjs(item?.profile?.birthday)}
-            hasFeedback
             {...formItemLayout}
           >
-            <DatePicker format="YYYY-MM-DD" />
+            <DatePicker
+              format="YYYY-MM-DD"
+              disabledDate={(current) => {
+                return dayjs().add(-18, "years") <= current;
+              }}
+            />
           </FormItem>
           <FormItem
-            name="mobile"
-            initialValue={item?.profile?.mobile}
+            name={["profile", "mobile"]}
             rules={[
               {
                 required: true,
@@ -151,8 +152,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             <Input />
           </FormItem>
           <FormItem
-            name="email"
-            initialValue={item?.profile?.email}
+            name={["profile", "email"]}
             rules={[
               {
                 required: true,

@@ -13,7 +13,7 @@ import { IModalProps, UserModal } from "./Modal";
 const UserContainer = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
-  const [currentItem, setCurrentItem] = useState({});
+  const [currentItem, setCurrentItem] = useState({ id: 0 });
   const [loading, setLoading] = useState(false);
 
   const { data } = useQuery(UsersDocument);
@@ -33,7 +33,7 @@ const UserContainer = () => {
   };
 
   const listModal: IModalProps = {
-    item: modalType === "create" ? {} : currentItem,
+    item: modalType === "create" ? { id: 0 } : currentItem,
     visible: modalVisible || false,
     destroyOnClose: true,
     maskClosable: false,

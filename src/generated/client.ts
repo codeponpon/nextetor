@@ -58,7 +58,7 @@ export type MutationSignInArgs = {
 
 export type Profile = {
   __typename?: 'Profile';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   user?: Maybe<User>;
   mobile?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -92,7 +92,7 @@ export type QueryUserArgs = {
 
 export type Role = {
   __typename?: 'Role';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   users?: Maybe<User>;
   name?: Maybe<Scalars['String']>;
   type: RoleType;
@@ -122,7 +122,7 @@ export type UpdateUserInput = {
 
 export type User = {
   __typename?: 'User';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   username?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   createdBy?: Maybe<CreatedBy>;

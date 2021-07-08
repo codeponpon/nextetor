@@ -19,14 +19,12 @@ interface ApollowContext {
 
 const findUsers = async (prisma: PrismaClient, args: any) => {
   const { status, createdBy, offset, limit } = args;
-  console.log("Find user argument: ", typeof offset, typeof limit);
   const users = await prisma.user.findMany({
     skip: offset,
     take: limit,
     where: { status: status, createdBy: createdBy },
     include: { profile: true, role: true },
   });
-  console.log("Users ", users);
   return users.map((user) => ({
     ...user,
     status: user.status as UserStatus,

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Link from "next/link";
 import { Table, Modal, Avatar } from "antd";
-// import { t } from "@lingui/macro";
-// import { Trans } from "@lingui/macro";
+import { ColumnsType } from "antd/lib/table";
 import { MenuInfo } from "rc-menu/lib/interface";
+
 import { User } from "@/generated/client";
 import DropOption from "@/components/DropOption";
 import styles from "./list.module.less";
-import { ColumnsType, TablePaginationConfig } from "antd/lib/table";
+import dayjs from "dayjs";
 
 export interface IUserProps {
   list: User[];
@@ -43,7 +43,7 @@ export const List: React.FC<IUserProps> = (props) => {
       title: "Avatar",
       dataIndex: "avatar",
       key: "avatar",
-      width: "7%",
+      width: "5%",
       fixed: "left",
       render: (text: string) => (
         <Avatar
@@ -56,7 +56,7 @@ export const List: React.FC<IUserProps> = (props) => {
       title: "Username",
       dataIndex: "username",
       key: "username",
-      width: "10%",
+      width: "15%",
       render: (text: string, record: User) => (
         <Link href={`user/${record.id}`}>
           <a>{text}</a>
@@ -87,7 +87,9 @@ export const List: React.FC<IUserProps> = (props) => {
       title: "CreateTime",
       dataIndex: "createTime",
       key: "createdAt",
-      render: (text: string, record: User) => record.createdAt,
+      width: "15%",
+      render: (text: string, record: User) =>
+        dayjs(record.createdAt).format("YYYY-MM-DD HH:mm:ss"),
     },
     {
       title: "Operation",
@@ -97,6 +99,7 @@ export const List: React.FC<IUserProps> = (props) => {
       render: (text: string, record: User) => {
         return (
           <DropOption
+            record={record}
             onMenuClick={(e: MenuInfo) => handleMenuClick(record, e)}
             menuOptions={[
               { key: 1, name: "Update" },

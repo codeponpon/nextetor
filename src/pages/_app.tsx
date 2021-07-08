@@ -8,6 +8,9 @@ import { useDispatch } from "react-redux";
 import NProgress from "nprogress";
 import { ApolloProvider } from "@apollo/client";
 
+import { AbilityContext } from "@/components/Can";
+import { buildAbilityFor } from "@/services/appAbility";
+
 import wrapperStore from "@/redux";
 import { useApollo } from "@/utils/client";
 import AuthStorage from "@/utils/auth-storage";
@@ -26,6 +29,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   const dispatch = useDispatch();
   const [awaitLoading, setAwaitLoading] = useState(true);
   const apolloClient = useApollo(pageProps.initialApolloState);
+  const ability = buildAbilityFor(AuthStorage.user, AuthStorage.role);
 
   useEffect(() => {
     const handleRouteChange = (
@@ -93,13 +97,15 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ApolloProvider client={apolloClient}>
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no, height=device-height, user-scalable=0"
-        />
-      </Head>
-      <Component {...pageProps} />
+      <AbilityContext.Provider value={ability}>
+        <Head>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no, height=device-height, user-scalable=0"
+          />
+        </Head>
+        <Component {...pageProps} />
+      </AbilityContext.Provider>
     </ApolloProvider>
   );
 };

@@ -1,53 +1,35 @@
-import { User, Profile, Role } from "@prisma/client";
-import { AbilityClass, AbilityBuilder } from "@casl/ability";
-import { PrismaAbility, Subjects } from "@casl/prisma";
-import AuthStorage from "@/utils/auth-storage";
+import { AbilityBuilder, Ability, AbilityClass } from "@casl/ability";
+import { User } from "@/generated/client";
+import subjectTypeFromGraphql from "./subjectTypeFromGraphql";
 
-const actions = ["manage", "create", "read", "update", "delete"] as const;
-const subjects = ["User", "all"] as const;
+type Actions = "manage" | "create" | "read" | "update" | "delete";
+type Subjects = "User" | User | "all";
 
-type AppAbility = PrismaAbility<
-  [
-    typeof actions[number],
-    (
-      | typeof subjects[number]
-      | Subjects<{ User: User; Profile: Profile; Role: Role }>
-    )
-  ]
->;
+export type AppAbility = Ability<[Actions, Subjects]>;
+export const AppAbility = Ability as AbilityClass<AppAbility>;
 
-const AppAbility = PrismaAbility as AbilityClass<AppAbility>;
-
-type DefinePermissions = (
-  user: User,
-  builder: AbilityBuilder<AppAbility>
-) => void;
-
-type Roles = "super_admin" | "admin" | "agent" | "call_center" | "member";
-
-const rolePermissions: Record<Roles, DefinePermissions> = {
-  super_admin(user, { can }) {
+export default function defineRulesFor(user: User, role: string) {
+  const { can, rules } = new AbilityBuilder(AppAbility);
+  console.log("Role :", role);
+  if (role === "super_admin") {
     can("manage", "all");
-  },
-  admin(user, { can }) {
+  } else if (role === "admin") {
     can("manage", "all");
-  },
-  agent(user, { can }) {},
-  call_center(user, { can }) {},
-  member(user, { can }) {
-    can("update", "User", { id: user.id });
-  },
-};
-
-export function defineAbilityFor(user: User): AppAbility {
-  const builder = new AbilityBuilder(AppAbility);
-  const role: Roles = AuthStorage.role;
-
-  if (typeof rolePermissions[role] === "function") {
-    rolePermissions[role](user, builder);
-  } else {
-    throw new Error(`Trying to use unknown role "${role}"`);
+  } else if (role === "agent") {
+    can(["read", "create"], "User");
+    can(["update"], "User", { id: user.id });
+  } else if (role === "call_center") {
+  } else if (role === "member") {
+    can(["read", "create"], "User");
+    can(["update"], "User", { id: user.id });
   }
 
-  return builder.build();
+  return rules;
+}
+
+export function buildAbilityFor(user: User, role: string): AppAbility {
+  return new AppAbility(defineRulesFor(user, role), {
+    // https://casl.js.org/v5/en/guide/subject-type-detection
+    detectSubjectType: subjectTypeFromGraphql,
+  });
 }

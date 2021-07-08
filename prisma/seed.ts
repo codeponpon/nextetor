@@ -1,5 +1,6 @@
 import { PrismaClient, RoleType } from "@prisma/client";
 import { hash } from "bcrypt";
+import dayjs from "dayjs";
 import faker from "faker";
 
 const prisma = new PrismaClient();
@@ -28,7 +29,7 @@ const main = async () => {
               mobile: "0987654321",
               firstName: "Clark",
               lastName: "Kent",
-              birthday: faker.date.recent(99),
+              birthday: dayjs(faker.date.recent(99)).format(),
               lineID: "",
               email: "superadmin@gmail.com",
             },
@@ -54,7 +55,7 @@ const main = async () => {
               mobile: "0987654322",
               firstName: "ad",
               lastName: "min",
-              birthday: faker.date.recent(99),
+              birthday: dayjs(faker.date.recent(99)).format(),
               lineID: "",
               email: "admin@gmail.com",
             },
@@ -80,7 +81,7 @@ const main = async () => {
               mobile: "0987654323",
               firstName: "a",
               lastName: "gent",
-              birthday: faker.date.recent(99),
+              birthday: dayjs(faker.date.recent(99)).format(),
               lineID: "",
               email: "agent@gmail.com",
             },

@@ -21,7 +21,7 @@ export const typeDefs = gql`
   }
 
   type User {
-    id: Int
+    id: Int!
     username: String
     password: String
     createdBy: CreatedBy
@@ -35,7 +35,7 @@ export const typeDefs = gql`
   }
 
   type Role {
-    id: Int
+    id: Int!
     users: User
     name: String
     type: RoleType!
@@ -45,7 +45,7 @@ export const typeDefs = gql`
   }
 
   type Profile {
-    id: Int
+    id: Int!
     user: User
     mobile: String
     firstName: String

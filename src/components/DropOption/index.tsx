@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { BarsOutlined, DownOutlined } from "@ant-design/icons";
 import { Dropdown, Button, Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
+import { User } from "@/generated/client";
+import Can, { AbilityContext } from "@/components/Can";
 
 interface iProps {
+  record: User;
   onMenuClick: (e: MenuInfo) => void;
   menuOptions: { key: any; name: string }[];
   buttonStyle?: object;
@@ -11,14 +14,34 @@ interface iProps {
 }
 
 const DropOption: React.FC<iProps> = ({
+  record,
   onMenuClick,
   menuOptions = [{ key: 0, name: "" }],
   buttonStyle,
   dropdownProps,
 }) => {
-  const menu = menuOptions.map((item) => (
-    <Menu.Item key={item.key}>{item.name}</Menu.Item>
-  ));
+  const ability = useContext(AbilityContext);
+  const menu = menuOptions.map((item) => {
+    const menu = [];
+    if (item.key === 1) {
+      menu.push(
+        <Menu.Item key={item.key} disabled={!ability.can("update", record)}>
+          {item.name}
+        </Menu.Item>
+      );
+    }
+
+    if (item.key === 2) {
+      menu.push(
+        <Menu.Item key={item.key} disabled={!ability.can("delete", record)}>
+          {item.name}
+        </Menu.Item>
+      );
+    }
+
+    return menu;
+  });
+
   return (
     <Dropdown
       overlay={<Menu onClick={onMenuClick}>{menu}</Menu>}
