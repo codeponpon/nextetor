@@ -9,18 +9,21 @@ export type AppAbility = Ability<[Actions, Subjects]>;
 export const AppAbility = Ability as AbilityClass<AppAbility>;
 
 export default function defineRulesFor(user: User, role: string) {
-  const { can, rules } = new AbilityBuilder(AppAbility);
+  const { can, cannot, rules } = new AbilityBuilder(AppAbility);
 
   if (role === "super_admin") {
     can("manage", "all");
   } else if (role === "admin") {
-    can("manage", "all");
+    can("manage", "all", {
+      id: user.id,
+      "role.type": { $in: ["ADMIN", "AGENT", "CALL_CENTER", "MEMBER"] },
+    });
   } else if (role === "agent") {
     can(["read", "create"], "User");
     can(["update"], "User", { id: user.id });
   } else if (role === "call_center") {
   } else if (role === "member") {
-    can(["read", "create"], "User");
+    can(["read"], "User");
     can(["update"], "User", { id: user.id });
   }
 
