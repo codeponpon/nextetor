@@ -1,28 +1,35 @@
 import React, { useState } from "react";
 import {
   RolesDocument,
+  UpdateUserDocument,
+  UpdateUserInput,
   User,
   useRolesQuery,
   UsersDocument,
   UsersQuery,
+  useUpdateUserMutation,
 } from "@/generated/client";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { IUserProps, List } from "./List";
 import { IModalProps, UserModal } from "./Modal";
+import { useDispatch } from "react-redux";
+import { ActionType } from "@/redux/actions/types";
+import dayjs from "dayjs";
 
-const UserContainer = () => {
+const UserContainer: React.FC = () => {
+  const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
   const [currentItem, setCurrentItem] = useState({ id: 0 });
   const [loading, setLoading] = useState(false);
 
-  const { data } = useQuery(UsersDocument);
+  const [updateUser] = useMutation(UpdateUserDocument);
+  const { data, refetch: refetchUsers } = useQuery(UsersDocument);
   const users = data?.users;
 
   const listProps: IUserProps = {
     list: users,
     onEditItem: (item) => {
-      console.log("EDIT ITEM :", item);
       setCurrentItem(item);
       setModalVisible(true);
       setModalType("update");
@@ -40,10 +47,26 @@ const UserContainer = () => {
     confirmLoading: loading,
     title: `${modalType === "create" ? `Create User` : `Update User`}`,
     centered: true,
-    onOk: (data: any) => {
+    onOk: async (updateUserInput: any) => {
       // handleRefresh()
-      console.log("On OK : ", data);
+      console.log("---- On OK ----");
       setLoading(true);
+      const { profile, birthday, ...userData } = updateUserInput;
+      try {
+        profile.birthday = birthday;
+        userData.updatedAt = dayjs(userData.updatedAt).format();
+        const { data } = await updateUser({
+          variables: { input: { ...userData, profile: { ...profile } } },
+        });
+        if (data.updateUser !== null) refetchUsers();
+      } catch (error) {
+        await dispatch({
+          type: ActionType.REQUEST_ERROR,
+          payload: error,
+        });
+      } finally {
+        setLoading(false);
+      }
     },
     onCancel() {
       setModalVisible(false);

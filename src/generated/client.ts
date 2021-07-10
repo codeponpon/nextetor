@@ -114,10 +114,27 @@ export type SignInInput = {
   password: Scalars['String'];
 };
 
+export type UpdateProfileInput = {
+  id?: Maybe<Scalars['Int']>;
+  mobile?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['Date'];
+};
+
 export type UpdateUserInput = {
   id: Scalars['Int'];
+  username?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
+  createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
+  token?: Maybe<Scalars['String']>;
+  roleId?: Maybe<Scalars['Int']>;
+  profile?: Maybe<UpdateProfileInput>;
+  updatedAt: Scalars['Date'];
 };
 
 export type User = {

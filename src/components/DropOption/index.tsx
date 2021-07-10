@@ -3,7 +3,7 @@ import { BarsOutlined, DownOutlined } from "@ant-design/icons";
 import { Dropdown, Button, Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
 import { User } from "@/generated/client";
-import Can, { AbilityContext } from "@/components/Can";
+import { AbilityContext } from "@/components/Can";
 
 interface iProps {
   record: User;

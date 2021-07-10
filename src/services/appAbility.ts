@@ -10,7 +10,7 @@ export const AppAbility = Ability as AbilityClass<AppAbility>;
 
 export default function defineRulesFor(user: User, role: string) {
   const { can, rules } = new AbilityBuilder(AppAbility);
-  console.log("Role :", role);
+
   if (role === "super_admin") {
     can("manage", "all");
   } else if (role === "admin") {

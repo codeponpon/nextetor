@@ -113,10 +113,27 @@ export type SignInInput = {
   password: Scalars['String'];
 };
 
+export type UpdateProfileInput = {
+  id?: Maybe<Scalars['Int']>;
+  mobile?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['Date'];
+};
+
 export type UpdateUserInput = {
   id: Scalars['Int'];
+  username?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
+  createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
+  token?: Maybe<Scalars['String']>;
+  roleId?: Maybe<Scalars['Int']>;
+  profile?: Maybe<UpdateProfileInput>;
+  updatedAt: Scalars['Date'];
 };
 
 export type User = {
@@ -229,6 +246,7 @@ export type ResolversTypes = {
   Role: ResolverTypeWrapper<Role>;
   RoleType: RoleType;
   SignInInput: SignInInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
@@ -246,6 +264,7 @@ export type ResolversParentTypes = {
   Query: {};
   Role: Role;
   SignInInput: SignInInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   Boolean: Scalars['Boolean'];

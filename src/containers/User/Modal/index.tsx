@@ -9,12 +9,13 @@ import {
   Select,
   DatePicker,
 } from "antd";
-import { RolesDocument, RoleType, User } from "@/generated/client";
+import { RolesDocument, RoleType, User, UserStatus } from "@/generated/client";
 import dayjs from "dayjs";
 import { useQuery } from "@apollo/client";
 import { startCase, toLower } from "lodash";
 import AuthStorage from "@/utils/auth-storage";
 import moment from "moment";
+import { $enum } from "ts-enum-util";
 
 export interface IModalProps {
   item?: User;
@@ -69,6 +70,18 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         initialValues={{ ...item }}
         layout="horizontal"
       >
+        <FormItem name="id" style={{ display: "none" }}>
+          <Input type="hidden" />
+        </FormItem>
+        <FormItem name="updatedAt" style={{ display: "none" }}>
+          <Input type="hidden" value={dayjs().format()} />
+        </FormItem>
+        <FormItem name={["profile", "updatedAt"]} style={{ display: "none" }}>
+          <Input type="hidden" value={dayjs().format()} />
+        </FormItem>
+        <FormItem name={["profile", "id"]} style={{ display: "none" }}>
+          <Input type="hidden" />
+        </FormItem>
         <FormItem
           name="username"
           rules={[{ required: true }]}
@@ -96,6 +109,21 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             ))}
           </Select>
         </FormItem>
+        <FormItem
+          name="status"
+          label="Status"
+          rules={[{ required: true }]}
+          hasFeedback
+          {...formItemLayout}
+        >
+          <Select placeholder={`Please select a status`}>
+            {$enum(UserStatus).map((status: string) => (
+              <Option key={status} value={status}>
+                {startCase(status)}
+              </Option>
+            ))}
+          </Select>
+        </FormItem>
         <Card title="Profile" bordered={false}>
           <FormItem
             name={["profile", "firstName"]}
@@ -116,7 +144,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             <Input />
           </FormItem>
           <FormItem
-            name={["profile", "lineId"]}
+            name={["profile", "lineID"]}
             label={`Line ID`}
             hasFeedback
             {...formItemLayout}

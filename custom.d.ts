@@ -11,3 +11,10 @@ declare namespace NodeJS {
     SALT_ROUNDS: number;
   }
 }
+
+declare module "*.graphql" {
+  import { DocumentNode } from "graphql";
+  const Schema: DocumentNode;
+
+  export = Schema;
+}
