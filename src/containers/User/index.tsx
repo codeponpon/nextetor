@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import {
-  RolesDocument,
+  DeleteUserDocument,
   UpdateUserDocument,
-  UpdateUserInput,
-  User,
-  useRolesQuery,
   UsersDocument,
-  UsersQuery,
-  useUpdateUserMutation,
 } from "@/generated/client";
 import { useMutation, useQuery } from "@apollo/client";
 import { IUserProps, List } from "./List";
@@ -24,6 +19,7 @@ const UserContainer: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const [updateUser] = useMutation(UpdateUserDocument);
+  const [deleteUser] = useMutation(DeleteUserDocument);
   const { data, refetch: refetchUsers } = useQuery(UsersDocument);
   const users = data?.users;
 
@@ -34,8 +30,10 @@ const UserContainer: React.FC = () => {
       setModalVisible(true);
       setModalType("update");
     },
-    onDeleteItem: (id) => {
+    onDeleteItem: async (id: number) => {
       console.log("DELETE ITEM ID: ", id);
+      const { data } = await deleteUser({ variables: { id: id } });
+      if (data.deleteUser !== null) refetchUsers();
     },
   };
 

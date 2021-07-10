@@ -7,7 +7,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
 }
 
 // START ENUM
@@ -50,8 +51,8 @@ model User {
 
 model Profile {
   id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int // relation scalar field (used in the `@relation` attribute above)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
   mobile    String    @unique
   firstName String?
   lastName  String?

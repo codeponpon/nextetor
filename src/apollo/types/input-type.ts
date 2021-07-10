@@ -8,6 +8,8 @@ export default gql`
     password: String!
     status: UserStatus
     createdBy: CreatedBy
+    roleId: Int!
+    profile: CreateProfileInput
   }
 
   input UpdateUserInput {
@@ -25,6 +27,15 @@ export default gql`
   input SignInInput {
     username: String!
     password: String!
+  }
+
+  input CreateProfileInput {
+    mobile: String!
+    firstName: String
+    lastName: String
+    birthday: String
+    lineID: String
+    email: String
   }
 
   input UpdateProfileInput {

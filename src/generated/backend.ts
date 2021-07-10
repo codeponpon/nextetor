@@ -14,11 +14,22 @@ export type Scalars = {
   Date: any;
 };
 
+export type CreateProfileInput = {
+  mobile: Scalars['String'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+};
+
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  roleId: Scalars['Int'];
+  profile?: Maybe<CreateProfileInput>;
 };
 
 export enum CreatedBy {
@@ -235,12 +246,13 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  CreateUserInput: CreateUserInput;
+  CreateProfileInput: CreateProfileInput;
   String: ResolverTypeWrapper<Scalars['String']>;
+  CreateUserInput: CreateUserInput;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   CreatedBy: CreatedBy;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Mutation: ResolverTypeWrapper<{}>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
   Role: ResolverTypeWrapper<Role>;
@@ -255,11 +267,12 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  CreateUserInput: CreateUserInput;
+  CreateProfileInput: CreateProfileInput;
   String: Scalars['String'];
+  CreateUserInput: CreateUserInput;
+  Int: Scalars['Int'];
   Date: Scalars['Date'];
   Mutation: {};
-  Int: Scalars['Int'];
   Profile: Profile;
   Query: {};
   Role: Role;

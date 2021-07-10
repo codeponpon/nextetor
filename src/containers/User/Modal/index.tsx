@@ -98,12 +98,13 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Select
-            placeholder={`Please select a role ${item!.roleId}`}
-            disabled={currentRole !== toLower(RoleType.SuperAdmin)}
-          >
+          <Select placeholder={`Please select a role ${item!.roleId}`}>
             {roles.map((role: any) => (
-              <Option key={role.id} value={role.id}>
+              <Option
+                key={role.id}
+                value={role.id}
+                disabled={role.name === toLower(RoleType.SuperAdmin)}
+              >
                 {startCase(role.name)}
               </Option>
             ))}
@@ -153,7 +154,9 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           </FormItem>
           <FormItem
             name="birthday"
-            initialValue={moment(item?.profile?.birthday)}
+            initialValue={
+              item?.profile?.birthday ? moment(item?.profile?.birthday) : null
+            }
             label={`Birth Date`}
             {...formItemLayout}
           >

@@ -15,11 +15,22 @@ export type Scalars = {
   Date: any;
 };
 
+export type CreateProfileInput = {
+  mobile: Scalars['String'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+};
+
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  roleId: Scalars['Int'];
+  profile?: Maybe<CreateProfileInput>;
 };
 
 export enum CreatedBy {

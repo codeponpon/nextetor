@@ -1,5 +1,6 @@
 import {
   CreatedBy,
+  CreateUserInput,
   Resolvers,
   Role,
   RoleType,
@@ -82,16 +83,19 @@ const expiresIn = "1 day";
 const createUserByParams = async (
   db: ServerlessMysql,
   prisma: PrismaClient,
-  params: any
+  params: CreateUserInput
 ) => {
+  const { profile, ...userData } = params;
   const user = await prisma.user.create({
     data: {
-      username: params.username,
-      password: await bcrypt.hash(params.password, 10),
-      status: params.status,
-      createdBy: params.createdBy,
+      username: userData.username,
+      password: await bcrypt.hash(userData.password, 10),
+      status: userData.status as UserStatus,
+      createdBy: userData.createdBy as CreatedBy,
       profile: {
-        ...params.profile,
+        create: {
+          ...profile,
+        },
       },
       roleId: params.roleId,
     },
@@ -165,7 +169,13 @@ export const resolvers: Resolvers<ApollowContext> = {
       if (!user) {
         throw new UserInputError("Could not found the user!");
       }
-      await context.prisma.user.delete({ where: { id: args.id } });
+
+      const deleteUser = await context.prisma.user.delete({
+        where: { id: args.id },
+      });
+
+      console.log("Delete User and Profile ", deleteUser);
+
       return {
         id: user.id,
         username: user.username,

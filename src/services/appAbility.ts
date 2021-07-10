@@ -15,7 +15,6 @@ export default function defineRulesFor(user: User, role: string) {
     can("manage", "all");
   } else if (role === "admin") {
     can("manage", "all", {
-      id: user.id,
       "role.type": { $in: ["ADMIN", "AGENT", "CALL_CENTER", "MEMBER"] },
     });
   } else if (role === "agent") {
