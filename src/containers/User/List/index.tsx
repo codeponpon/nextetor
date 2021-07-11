@@ -58,7 +58,7 @@ export const List: React.FC<IUserProps> = (props) => {
       key: "username",
       width: "15%",
       render: (text: string, record: User) => (
-        <Link href={`user/${record.id}`}>
+        <Link href={`users/[id]`} as={`users/${record.id}`} shallow={true}>
           <a>{text}</a>
         </Link>
       ),

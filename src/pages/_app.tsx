@@ -54,9 +54,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   }, []);
 
   useAsync(async () => {
-    if (AuthStorage.loggedIn) {
+    if (AuthStorage.loggedIn && AuthStorage.user) {
       try {
-        router.push(router.pathname);
+        router.push({ pathname: router.pathname, query: { ...router.query } });
       } catch (error) {
         if (
           (error.status === 403 || error.status === 401) &&
@@ -73,6 +73,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 
       setTimeout(() => setAwaitLoading(false), 600);
     } else {
+      AuthStorage.destroy();
+      dispatch({ type: "LOGOUT_SUCCESS" });
+      if (router.pathname !== "/login") router.push("/login");
       setTimeout(() => setAwaitLoading(false), 600);
     }
   }, [AuthStorage.loggedIn]);
