@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 export interface IUserProps {
   list: User[];
   onDeleteItem: (id: any) => void;
-  onEditItem: (u: User) => void;
+  onEditItem: (u: User, a?: string) => void;
   // loading: boolean;
   // rowSelection: object;
   // onChange?: (pagination: any, filters: any, sorter: any) => void;
@@ -58,9 +58,7 @@ export const List: React.FC<IUserProps> = (props) => {
       key: "username",
       width: "15%",
       render: (text: string, record: User) => (
-        <Link href={`users/[id]`} as={`users/${record.id}`} shallow={true}>
-          <a>{text}</a>
-        </Link>
+        <a onClick={(e) => onEditItem(record, "view")}>{text}</a>
       ),
     },
     {

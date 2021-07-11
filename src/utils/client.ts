@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 type MyApolloCache = any;
 let apolloClient: ApolloClient<MyApolloCache> | undefined;
 
-function createIsomorphLink() {
+const createIsomorphLink = () => {
   if (typeof window === "undefined") {
     const { SchemaLink } = require("@apollo/client/link/schema");
     const { schema } = require("@/apollo/schema");
@@ -19,15 +19,15 @@ function createIsomorphLink() {
       credentials: "same-origin",
     });
   }
-}
+};
 
-function createApolloClient() {
+const createApolloClient = () => {
   return new ApolloClient({
     ssrMode: typeof window === "undefined",
     link: createIsomorphLink(),
     cache: new InMemoryCache(),
   });
-}
+};
 
 export const initializeApollo = (initialState: MyApolloCache | null = null) => {
   const _apolloClient = apolloClient ?? createApolloClient();

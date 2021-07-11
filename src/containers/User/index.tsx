@@ -20,30 +20,37 @@ const UserContainer: React.FC = () => {
 
   const [updateUser] = useMutation(UpdateUserDocument);
   const [deleteUser] = useMutation(DeleteUserDocument);
-  const { data, refetch: refetchUsers } = useQuery(UsersDocument);
+  const { data, refetch } = useQuery(UsersDocument);
   const users = data?.users;
 
   const listProps: IUserProps = {
     list: users,
-    onEditItem: (item) => {
+    onEditItem: (item, action = "update") => {
       setCurrentItem(item);
       setModalVisible(true);
-      setModalType("update");
+      setModalType(action);
     },
     onDeleteItem: async (id: number) => {
       console.log("DELETE ITEM ID: ", id);
       const { data } = await deleteUser({ variables: { id: id } });
-      if (data.deleteUser !== null) refetchUsers();
+      if (data.deleteUser !== null) refetch();
     },
   };
 
   const listModal: IModalProps = {
+    action: modalType,
     item: modalType === "create" ? { id: 0 } : currentItem,
     visible: modalVisible || false,
     destroyOnClose: true,
     maskClosable: false,
     confirmLoading: loading,
-    title: `${modalType === "create" ? `Create User` : `Update User`}`,
+    title: `${
+      modalType === "create"
+        ? `Create User`
+        : modalType === "update"
+        ? `Update User`
+        : "Detail"
+    }`,
     centered: true,
     onOk: async (updateUserInput: any) => {
       // handleRefresh()
@@ -56,7 +63,8 @@ const UserContainer: React.FC = () => {
         const { data } = await updateUser({
           variables: { input: { ...userData, profile: { ...profile } } },
         });
-        if (data.updateUser !== null) refetchUsers();
+        console.log(data);
+        if (data.updateUser !== null) refetch();
       } catch (error) {
         await dispatch({
           type: ActionType.REQUEST_ERROR,

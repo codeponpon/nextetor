@@ -8,6 +8,7 @@ import {
   Card,
   Select,
   DatePicker,
+  message,
 } from "antd";
 import { RolesDocument, RoleType, User, UserStatus } from "@/generated/client";
 import dayjs from "dayjs";
@@ -18,6 +19,7 @@ import moment from "moment";
 import { $enum } from "ts-enum-util";
 
 export interface IModalProps {
+  action?: string;
   item?: User;
   visible: boolean;
   destroyOnClose: boolean;
@@ -43,7 +45,7 @@ const formItemLayout = {
 
 export const UserModal: React.FC<IModalProps> = (props) => {
   const currentRole = AuthStorage.role;
-  const { item, onOk, ...modalProps } = props;
+  const { item, onOk, action, ...modalProps } = props;
   const { data, loading } = useQuery(RolesDocument);
   const formRef = createRef<FormInstance>();
 
@@ -52,10 +54,19 @@ export const UserModal: React.FC<IModalProps> = (props) => {
     formRef.current
       ?.validateFields()
       .then((values: any) => {
+        if (action === "view") return modalProps.onCancel();
         const data = {
           ...values,
         };
         onOk(data);
+        message.loading({ content: "Loading...", key: "updatable" });
+        setTimeout(() => {
+          message.success({
+            content: "Loaded!",
+            key: "updatable",
+            duration: 2,
+          });
+        }, 1000);
       })
       .catch((errorInfo: any) => {
         console.log("ERROR Info: ", errorInfo);
@@ -98,7 +109,10 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Select placeholder={`Please select a role ${item!.roleId}`}>
+          <Select
+            placeholder={`Please select a role ${item!.roleId}`}
+            disabled={action === "view"}
+          >
             {roles.map((role: any) => (
               <Option
                 key={role.id}
@@ -117,7 +131,10 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Select placeholder={`Please select a status`}>
+          <Select
+            placeholder={`Please select a status`}
+            disabled={action === "view"}
+          >
             {$enum(UserStatus).map((status: string) => (
               <Option key={status} value={status}>
                 {startCase(status)}
@@ -133,7 +150,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             hasFeedback
             {...formItemLayout}
           >
-            <Input />
+            <Input disabled={action === "view"} />
           </FormItem>
           <FormItem
             name={["profile", "lastName"]}
@@ -142,7 +159,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             hasFeedback
             {...formItemLayout}
           >
-            <Input />
+            <Input disabled={action === "view"} />
           </FormItem>
           <FormItem
             name={["profile", "lineID"]}
@@ -150,7 +167,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             hasFeedback
             {...formItemLayout}
           >
-            <Input />
+            <Input disabled={action === "view"} />
           </FormItem>
           <FormItem
             name="birthday"
@@ -165,6 +182,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
               disabledDate={(current) => {
                 return dayjs().add(-18, "years") <= current;
               }}
+              disabled={action === "view"}
             />
           </FormItem>
           <FormItem
@@ -180,7 +198,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             hasFeedback
             {...formItemLayout}
           >
-            <Input />
+            <Input disabled={action === "view"} />
           </FormItem>
           <FormItem
             name={["profile", "email"]}
@@ -195,7 +213,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             hasFeedback
             {...formItemLayout}
           >
-            <Input />
+            <Input disabled={action === "view"} />
           </FormItem>
         </Card>
       </Form>
