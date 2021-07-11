@@ -1,7 +1,7 @@
 [
   {
     "name": "super_admin",
-    "type": "ADMIN"
+    "type": "SUPER_ADMIN"
   },
   {
     "name": "admin",
@@ -9,10 +9,14 @@
   },
   {
     "name": "agent",
-    "type": "USER"
+    "type": "AGENT"
   },
   {
-    "name": "user",
-    "type": "USER"
+    "name": "member",
+    "type": "MEMBER"
+  },
+  {
+    "name": "call_center",
+    "type": "CALL_CENTER"
   }
 ]

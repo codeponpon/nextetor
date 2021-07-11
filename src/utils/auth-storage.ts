@@ -16,6 +16,10 @@ class AuthStorage extends Storage {
   get role() {
     return this.value && this.value.role;
   }
+
+  get user() {
+    return this.value && this.value.user;
+  }
 }
 
 export default new AuthStorage("AUTH");

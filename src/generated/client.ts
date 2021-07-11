@@ -15,11 +15,22 @@ export type Scalars = {
   Date: any;
 };
 
+export type CreateProfileInput = {
+  mobile: Scalars['String'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+};
+
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  roleId: Scalars['Int'];
+  profile?: Maybe<CreateProfileInput>;
 };
 
 export enum CreatedBy {
@@ -33,6 +44,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
   deleteUser?: Maybe<User>;
+  deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
 };
 
@@ -52,13 +64,19 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationDeleteProfileArgs = {
+  id?: Maybe<Scalars['Int']>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
+
 export type MutationSignInArgs = {
   input: SignInInput;
 };
 
 export type Profile = {
   __typename?: 'Profile';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   user?: Maybe<User>;
   mobile?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -74,12 +92,15 @@ export type Query = {
   __typename?: 'Query';
   users: Array<User>;
   user?: Maybe<User>;
+  roles: Array<Role>;
 };
 
 
 export type QueryUsersArgs = {
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
 };
 
 
@@ -89,7 +110,7 @@ export type QueryUserArgs = {
 
 export type Role = {
   __typename?: 'Role';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   users?: Maybe<User>;
   name?: Maybe<Scalars['String']>;
   type: RoleType;
@@ -99,6 +120,7 @@ export type Role = {
 };
 
 export enum RoleType {
+  SuperAdmin = 'SUPER_ADMIN',
   Admin = 'ADMIN',
   Agent = 'AGENT',
   Member = 'MEMBER',
@@ -110,24 +132,42 @@ export type SignInInput = {
   password: Scalars['String'];
 };
 
-export type UpdateUserInput = {
-  id: Scalars['Int'];
-  password?: Maybe<Scalars['String']>;
-  status?: Maybe<UserStatus>;
+export type UpdateProfileInput = {
+  id?: Maybe<Scalars['Int']>;
+  mobile?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['Date'];
 };
 
-export type User = {
-  __typename?: 'User';
-  id?: Maybe<Scalars['Int']>;
+export type UpdateUserInput = {
+  id: Scalars['Int'];
   username?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
-  createdAt: Scalars['Date'];
+  token?: Maybe<Scalars['String']>;
+  roleId?: Maybe<Scalars['Int']>;
+  profile?: Maybe<UpdateProfileInput>;
+  updatedAt: Scalars['Date'];
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Int'];
+  username?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
+  createdBy?: Maybe<CreatedBy>;
+  status?: Maybe<UserStatus>;
+  createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
   token?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
   role?: Maybe<Role>;
+  roleId?: Maybe<Scalars['Int']>;
 };
 
 export enum UserStatus {
@@ -173,6 +213,17 @@ export type DeleteUserMutation = (
       { __typename?: 'Role' }
       & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
     )> }
+  )> }
+);
+
+export type RolesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RolesQuery = (
+  { __typename?: 'Query' }
+  & { roles: Array<(
+    { __typename?: 'Role' }
+    & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
   )> }
 );
 
@@ -225,7 +276,7 @@ export type UserQuery = (
   { __typename?: 'Query' }
   & { user?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'roleId' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
     & { profile?: Maybe<(
       { __typename?: 'Profile' }
       & Pick<Profile, 'id' | 'mobile' | 'firstName' | 'lastName' | 'birthday' | 'lineID' | 'email' | 'createdAt' | 'updatedAt'>
@@ -236,14 +287,19 @@ export type UserQuery = (
   )> }
 );
 
-export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type UsersQueryVariables = Exact<{
+  status?: Maybe<UserStatus>;
+  createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+}>;
 
 
 export type UsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'roleId' | 'username' | 'password' | 'status' | 'createdBy' | 'createdAt' | 'updatedAt'>
     & { profile?: Maybe<(
       { __typename?: 'Profile' }
       & Pick<Profile, 'id' | 'mobile' | 'firstName' | 'lastName' | 'birthday' | 'lineID' | 'email' | 'createdAt' | 'updatedAt'>
@@ -371,6 +427,45 @@ export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const RolesDocument = gql`
+    query Roles {
+  roles {
+    id
+    name
+    type
+    thirdPartyInfo
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useRolesQuery__
+ *
+ * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRolesQuery(baseOptions?: Apollo.QueryHookOptions<RolesQuery, RolesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
+      }
+export function useRolesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RolesQuery, RolesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<RolesQuery, RolesQueryVariables>(RolesDocument, options);
+        }
+export type RolesQueryHookResult = ReturnType<typeof useRolesQuery>;
+export type RolesLazyQueryHookResult = ReturnType<typeof useRolesLazyQuery>;
+export type RolesQueryResult = Apollo.QueryResult<RolesQuery, RolesQueryVariables>;
 export const SingInDocument = gql`
     mutation SingIn($input: SignInInput!) {
   signIn(input: $input) {
@@ -492,6 +587,7 @@ export const UserDocument = gql`
     query User($id: Int!) {
   user(id: $id) {
     id
+    roleId
     username
     password
     status
@@ -549,9 +645,10 @@ export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
 export const UsersDocument = gql`
-    query Users {
-  users {
+    query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int) {
+  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit) {
     id
+    roleId
     username
     password
     status
@@ -593,6 +690,10 @@ export const UsersDocument = gql`
  * @example
  * const { data, loading, error } = useUsersQuery({
  *   variables: {
+ *      status: // value for 'status'
+ *      createdBy: // value for 'createdBy'
+ *      offset: // value for 'offset'
+ *      limit: // value for 'limit'
  *   },
  * });
  */

@@ -1,0 +1,10 @@
+query Roles {
+  roles{
+    id
+    name
+    type
+    thirdPartyInfo
+    createdAt
+    updatedAt
+  }
+}

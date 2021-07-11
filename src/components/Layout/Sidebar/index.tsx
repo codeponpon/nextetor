@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 
 import { Menu, MenuTheme } from "antd";
-import { DashboardOutlined } from "@ant-design/icons";
+import { DashboardOutlined, TeamOutlined } from "@ant-design/icons";
 
 const Sidebar = ({ theme }: { theme: MenuTheme }) => {
   const router = useRouter();
@@ -28,6 +28,13 @@ const Sidebar = ({ theme }: { theme: MenuTheme }) => {
         icon={<DashboardOutlined />}
       >
         <span>Dashboard</span>
+      </Menu.Item>
+      <Menu.Item
+        key="/admin/users"
+        onClick={() => router.push("/admin/users")}
+        icon={<TeamOutlined />}
+      >
+        <span>Users</span>
       </Menu.Item>
     </Menu>
   );

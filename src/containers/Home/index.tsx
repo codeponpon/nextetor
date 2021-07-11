@@ -7,15 +7,7 @@ const Index = () => {
   const users = data?.users;
   return (
     <>
-      <h1>Home Page</h1>
-      {users &&
-        users.map((user) => {
-          return (
-            <div key={user.id}>
-              Username: {user.username} ({user.status})
-            </div>
-          );
-        })}
+      <h1>Dashboard Page</h1>
     </>
   );
 };

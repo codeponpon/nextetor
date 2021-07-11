@@ -6,8 +6,12 @@ generates:
     plugins:
       - "typescript"
       - "typescript-resolvers"
+    config:
+      withMutationFn: true
   src/generated/client.ts:
     plugins:
       - "typescript"
       - "typescript-operations"
       - "typescript-react-apollo"
+    config:
+      withMutationFn: true

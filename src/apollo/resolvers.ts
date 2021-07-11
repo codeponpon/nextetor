@@ -1,10 +1,9 @@
 import {
   CreatedBy,
-  Profile,
+  CreateUserInput,
   Resolvers,
   Role,
   RoleType,
-  User,
   UserStatus,
 } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
@@ -19,16 +18,14 @@ interface ApollowContext {
   prisma: PrismaClient;
 }
 
-type UsersDbQueryResult = User[];
-type UserDbQueryResult = User[];
-
 const findUsers = async (prisma: PrismaClient, args: any) => {
-  const { status, createdBy } = args;
+  const { status, createdBy, offset, limit } = args;
   const users = await prisma.user.findMany({
+    skip: offset,
+    take: limit,
     where: { status: status, createdBy: createdBy },
     include: { profile: true, role: true },
   });
-
   return users.map((user) => ({
     ...user,
     status: user.status as UserStatus,
@@ -36,6 +33,7 @@ const findUsers = async (prisma: PrismaClient, args: any) => {
     createdAt: user.createdAt.toString(),
     updatedAt: user.updatedAt && user.updatedAt.toString(),
     profile: {
+      id: Number(user.profile?.id),
       ...user.profile,
       birthday: user.profile?.birthday?.toString(),
       createdAt: user.profile?.createdAt.toString(),
@@ -63,10 +61,12 @@ const getUserById = async (
   return {
     ...user,
     status: user.status as UserStatus,
+    roleId: user.roleId,
     createdBy: user.createdBy as CreatedBy,
     createdAt: user.createdAt.toString(),
     updatedAt: user.updatedAt && user.updatedAt.toString(),
     profile: {
+      id: Number(user.profile?.id),
       ...user.profile,
       birthday: user.profile?.birthday?.toString(),
       createdAt: user.profile?.createdAt.toString(),
@@ -83,17 +83,21 @@ const expiresIn = "1 day";
 const createUserByParams = async (
   db: ServerlessMysql,
   prisma: PrismaClient,
-  params: any
+  params: CreateUserInput
 ) => {
+  const { profile, ...userData } = params;
   const user = await prisma.user.create({
     data: {
-      username: params.username,
-      password: await bcrypt.hash(params.password, 10),
-      status: params.status,
-      createdBy: params.createdBy,
+      username: userData.username,
+      password: await bcrypt.hash(userData.password, 10),
+      status: userData.status as UserStatus,
+      createdBy: userData.createdBy as CreatedBy,
       profile: {
-        ...params.profile,
+        create: {
+          ...profile,
+        },
       },
+      roleId: params.roleId,
     },
   });
 
@@ -126,40 +130,70 @@ export const resolvers: Resolvers<ApollowContext> = {
     async user(parent, args, context) {
       return await getUserById(args.id, context.db, context.prisma);
     },
+    async roles(parent, args, context) {
+      const roles = await context.prisma.role.findMany();
+      return roles.map((role) => ({ ...role, type: role.type as RoleType }));
+    },
   },
   Mutation: {
     async createUser(parent, args, context) {
       return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {
-      const columns: string[] = [];
-      const sqlParams: any[] = [];
+      try {
+        const { profile, ...userData } = args.input;
+        const updatedUser = await context.prisma.user.update({
+          where: { id: Number(args.input.id) },
+          include: { profile: true },
+          data: {
+            ...userData,
+            profile: {
+              update: {
+                ...profile,
+              },
+            },
+          },
+        });
 
-      if (args.input.password) {
-        columns.push("password = ?");
-        sqlParams.push(args.input.password);
+        return {
+          ...updatedUser,
+          createdBy: updatedUser.createdBy as CreatedBy,
+          status: updatedUser.status as UserStatus,
+        };
+      } catch (error) {
+        throw new UserInputError("Could not update the user!");
       }
-
-      if (args.input.status) {
-        columns.push("status = ?");
-        sqlParams.push(args.input.status);
-      }
-      sqlParams.push(args.input.id);
-
-      await context.db.query(
-        `UPDATE User SET ${columns.join(", ")} WHERE id = ?`,
-        sqlParams
-      );
-      await context.db.end();
-      return await getUserById(args.input.id, context.db, context.prisma);
     },
     async deleteUser(parent, args, context) {
       const user = await getUserById(args.id, context.db, context.prisma);
       if (!user) {
         throw new UserInputError("Could not found the user!");
       }
-      await context.db.query("DELETE FROM User WHERE id = ?", [args.id]);
-      return user;
+
+      const deleteUser = await context.prisma.user.delete({
+        where: { id: args.id },
+      });
+
+      console.log("Delete User and Profile ", deleteUser);
+
+      return {
+        id: user.id,
+        username: user.username,
+        password: user.password,
+        createdBy: user.createdBy as CreatedBy,
+        status: user.status as UserStatus,
+        createdAt: user.createdAt.toString(),
+        updatedAt: user.updatedAt?.toString(),
+        profile: {
+          ...user.profile,
+          birthday: user.profile?.birthday?.toString(),
+        },
+        role: {
+          ...user.role,
+          type: user?.role?.type as RoleType,
+          createdAt: user.role?.createdAt.toString(),
+        },
+      };
     },
     async signIn(parent, args, context) {
       const user = await context.prisma.user.findUnique({
@@ -189,6 +223,7 @@ export const resolvers: Resolvers<ApollowContext> = {
         updatedAt: userWithToken.updatedAt?.toString(),
         token: userWithToken.token,
         profile: {
+          id: Number(user.profile?.id),
           ...user.profile,
           birthday: user.profile?.birthday?.toString(),
           createdAt: user.profile?.createdAt.toString(),

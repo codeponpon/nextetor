@@ -8,19 +8,28 @@ import { useDispatch } from "react-redux";
 import NProgress from "nprogress";
 import { ApolloProvider } from "@apollo/client";
 
+import { AbilityContext } from "@/components/Can";
+import { buildAbilityFor } from "@/services/appAbility";
+
 import wrapperStore from "@/redux";
 import { useApollo } from "@/utils/client";
 import AuthStorage from "@/utils/auth-storage";
 import Loading from "@/components/Loading";
 require("src/styles/index.less");
 
-const urlsIgnore = ["/forgot-password", "/login", "/reset-password"];
+const urlsIgnore = [
+  "/forgot-password",
+  "/login",
+  "/reset-password",
+  "/forbidden",
+];
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [awaitLoading, setAwaitLoading] = useState(true);
   const apolloClient = useApollo(pageProps.initialApolloState);
+  const ability = buildAbilityFor(AuthStorage.user, AuthStorage.role);
 
   useEffect(() => {
     const handleRouteChange = (
@@ -45,9 +54,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   }, []);
 
   useAsync(async () => {
-    if (AuthStorage.loggedIn) {
+    if (AuthStorage.loggedIn && AuthStorage.user) {
       try {
-        router.push("/");
+        router.push({ pathname: router.pathname, query: { ...router.query } });
       } catch (error) {
         if (
           (error.status === 403 || error.status === 401) &&
@@ -62,8 +71,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         }
       }
 
-      setTimeout(() => setAwaitLoading(false), 500);
+      setTimeout(() => setAwaitLoading(false), 600);
     } else {
+      AuthStorage.destroy();
+      dispatch({ type: "LOGOUT_SUCCESS" });
+      if (router.pathname !== "/login") router.push("/login");
       setTimeout(() => setAwaitLoading(false), 600);
     }
   }, [AuthStorage.loggedIn]);
@@ -88,13 +100,15 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ApolloProvider client={apolloClient}>
-      <Head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no, height=device-height, user-scalable=0"
-        />
-      </Head>
-      <Component {...pageProps} />
+      <AbilityContext.Provider value={ability}>
+        <Head>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no, height=device-height, user-scalable=0"
+          />
+        </Head>
+        <Component {...pageProps} />
+      </AbilityContext.Provider>
     </ApolloProvider>
   );
 };

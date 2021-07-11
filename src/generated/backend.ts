@@ -14,11 +14,22 @@ export type Scalars = {
   Date: any;
 };
 
+export type CreateProfileInput = {
+  mobile: Scalars['String'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+};
+
 export type CreateUserInput = {
   username: Scalars['String'];
   password: Scalars['String'];
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  roleId: Scalars['Int'];
+  profile?: Maybe<CreateProfileInput>;
 };
 
 export enum CreatedBy {
@@ -32,6 +43,7 @@ export type Mutation = {
   createUser?: Maybe<User>;
   updateUser?: Maybe<User>;
   deleteUser?: Maybe<User>;
+  deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
 };
 
@@ -51,13 +63,19 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationDeleteProfileArgs = {
+  id?: Maybe<Scalars['Int']>;
+  userId?: Maybe<Scalars['Int']>;
+};
+
+
 export type MutationSignInArgs = {
   input: SignInInput;
 };
 
 export type Profile = {
   __typename?: 'Profile';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   user?: Maybe<User>;
   mobile?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -73,12 +91,15 @@ export type Query = {
   __typename?: 'Query';
   users: Array<User>;
   user?: Maybe<User>;
+  roles: Array<Role>;
 };
 
 
 export type QueryUsersArgs = {
   status?: Maybe<UserStatus>;
   createdBy?: Maybe<CreatedBy>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
 };
 
 
@@ -88,7 +109,7 @@ export type QueryUserArgs = {
 
 export type Role = {
   __typename?: 'Role';
-  id?: Maybe<Scalars['Int']>;
+  id: Scalars['Int'];
   users?: Maybe<User>;
   name?: Maybe<Scalars['String']>;
   type: RoleType;
@@ -98,6 +119,7 @@ export type Role = {
 };
 
 export enum RoleType {
+  SuperAdmin = 'SUPER_ADMIN',
   Admin = 'ADMIN',
   Agent = 'AGENT',
   Member = 'MEMBER',
@@ -109,24 +131,42 @@ export type SignInInput = {
   password: Scalars['String'];
 };
 
-export type UpdateUserInput = {
-  id: Scalars['Int'];
-  password?: Maybe<Scalars['String']>;
-  status?: Maybe<UserStatus>;
+export type UpdateProfileInput = {
+  id?: Maybe<Scalars['Int']>;
+  mobile?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['Date'];
 };
 
-export type User = {
-  __typename?: 'User';
-  id?: Maybe<Scalars['Int']>;
+export type UpdateUserInput = {
+  id: Scalars['Int'];
   username?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   createdBy?: Maybe<CreatedBy>;
   status?: Maybe<UserStatus>;
-  createdAt: Scalars['Date'];
+  token?: Maybe<Scalars['String']>;
+  roleId?: Maybe<Scalars['Int']>;
+  profile?: Maybe<UpdateProfileInput>;
+  updatedAt: Scalars['Date'];
+};
+
+export type User = {
+  __typename?: 'User';
+  id: Scalars['Int'];
+  username?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
+  createdBy?: Maybe<CreatedBy>;
+  status?: Maybe<UserStatus>;
+  createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
   token?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
   role?: Maybe<Role>;
+  roleId?: Maybe<Scalars['Int']>;
 };
 
 export enum UserStatus {
@@ -213,17 +253,19 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  CreateUserInput: CreateUserInput;
+  CreateProfileInput: CreateProfileInput;
   String: ResolverTypeWrapper<Scalars['String']>;
+  CreateUserInput: CreateUserInput;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   CreatedBy: CreatedBy;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Mutation: ResolverTypeWrapper<{}>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
   Role: ResolverTypeWrapper<Role>;
   RoleType: RoleType;
   SignInInput: SignInInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
@@ -232,15 +274,17 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  CreateUserInput: CreateUserInput;
+  CreateProfileInput: CreateProfileInput;
   String: Scalars['String'];
+  CreateUserInput: CreateUserInput;
+  Int: Scalars['Int'];
   Date: Scalars['Date'];
   Mutation: {};
-  Int: Scalars['Int'];
   Profile: Profile;
   Query: {};
   Role: Role;
   SignInInput: SignInInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
   Boolean: Scalars['Boolean'];
@@ -254,11 +298,12 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
+  deleteProfile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteProfileArgs, never>>;
   signIn?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
 };
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = {
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   mobile?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -274,10 +319,11 @@ export type ProfileResolvers<ContextType = any, ParentType extends ResolversPare
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  roles?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
 };
 
 export type RoleResolvers<ContextType = any, ParentType extends ResolversParentTypes['Role'] = ResolversParentTypes['Role']> = {
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   users?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['RoleType'], ParentType, ContextType>;
@@ -288,16 +334,17 @@ export type RoleResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdBy?: Resolver<Maybe<ResolversTypes['CreatedBy']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['UserStatus']>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
+  roleId?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -17,6 +17,7 @@ import Avatar from "@/components/Avatar";
 import classes from "./style.module.less";
 import { useDispatch } from "react-redux";
 import { actionLogout } from "@/redux/actions/auth";
+import authStorage from "@/utils/auth-storage";
 
 interface IProps {
   style?: any;
@@ -42,10 +43,9 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
       },
     });
   }, []);
-
-  const fullName = "cPP";
+  const fullName = authStorage.user!.profile?.firstName;
   const avatar = "https://i.pravatar.cc/150?img=37";
-  const email = "cpp@example.com";
+  const email = authStorage.user!.profile?.email;
   const menu = (
     <Menu className={classes.menuDropdown}>
       <Menu.Item key="info">
