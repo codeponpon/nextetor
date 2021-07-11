@@ -100,7 +100,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Input disabled={true} />
+          <Input disabled={action !== "create"} />
         </FormItem>
         <FormItem
           name="roleId"

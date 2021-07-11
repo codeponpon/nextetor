@@ -10,14 +10,18 @@ import { IModalProps, UserModal } from "./Modal";
 import { useDispatch } from "react-redux";
 import { ActionType } from "@/redux/actions/types";
 import dayjs from "dayjs";
+import Filter, { iFilterProps } from "@/containers/User/Filter";
+import { useRouter } from "next/router";
+import Page from "@/components/Page";
 
 const UserContainer: React.FC = () => {
-  const dispatch = useDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState("");
   const [currentItem, setCurrentItem] = useState({ id: 0 });
   const [loading, setLoading] = useState(false);
 
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [updateUser] = useMutation(UpdateUserDocument);
   const [deleteUser] = useMutation(DeleteUserDocument);
   const { data, refetch } = useQuery(UsersDocument);
@@ -53,7 +57,6 @@ const UserContainer: React.FC = () => {
     }`,
     centered: true,
     onOk: async (updateUserInput: any) => {
-      // handleRefresh()
       console.log("---- On OK ----");
       setLoading(true);
       const { profile, birthday, ...userData } = updateUserInput;
@@ -79,11 +82,29 @@ const UserContainer: React.FC = () => {
     },
   };
 
+  const { query } = router;
+  const filterProps: iFilterProps = {
+    filter: {
+      ...query,
+    },
+    onFilterChange: (value: {
+      name?: string;
+      createTime?: moment.Moment[] | string[];
+    }) => {
+      console.log("On Filter Change");
+    },
+    onAdd() {
+      setModalVisible(true);
+      setModalType("create");
+    },
+  };
+
   return (
-    <>
+    <Page inner>
+      <Filter {...filterProps} />
       <List {...listProps} />
       <UserModal {...listModal} />
-    </>
+    </Page>
   );
 };
 
