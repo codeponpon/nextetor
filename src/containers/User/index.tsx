@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import {
+  CreateUserDocument,
   DeleteUserDocument,
   UpdateUserDocument,
+  User,
   UsersDocument,
 } from "@/generated/client";
 import { useMutation, useQuery } from "@apollo/client";
@@ -13,6 +15,7 @@ import dayjs from "dayjs";
 import Filter, { iFilterProps } from "@/containers/User/Filter";
 import { useRouter } from "next/router";
 import Page from "@/components/Page";
+import { stringify } from "query-string";
 
 const UserContainer: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,6 +25,7 @@ const UserContainer: React.FC = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const [createUser] = useMutation(CreateUserDocument);
   const [updateUser] = useMutation(UpdateUserDocument);
   const [deleteUser] = useMutation(DeleteUserDocument);
   const { data, refetch } = useQuery(UsersDocument);
@@ -43,7 +47,10 @@ const UserContainer: React.FC = () => {
 
   const listModal: IModalProps = {
     action: modalType,
-    item: modalType === "create" ? { id: 0 } : currentItem,
+    item:
+      modalType === "create"
+        ? { username: "", password: "", roleId: 4 }
+        : currentItem,
     visible: modalVisible || false,
     destroyOnClose: true,
     maskClosable: false,
@@ -56,18 +63,25 @@ const UserContainer: React.FC = () => {
         : "Detail"
     }`,
     centered: true,
-    onOk: async (updateUserInput: any) => {
+    onOk: async (userInput) => {
       console.log("---- On OK ----");
       setLoading(true);
-      const { profile, birthday, ...userData } = updateUserInput;
+      const { profile, birthday, confirm, ...userData } = userInput;
+      if (birthday) profile.birthday = birthday;
       try {
-        profile.birthday = birthday;
-        userData.updatedAt = dayjs(userData.updatedAt).format();
-        const { data } = await updateUser({
-          variables: { input: { ...userData, profile: { ...profile } } },
-        });
-        console.log(data);
-        if (data.updateUser !== null) refetch();
+        if (modalType === "create") {
+          const { data } = await createUser({
+            variables: { input: { ...userData, profile: { ...profile } } },
+          });
+          if (data.createUser !== null) refetch();
+        } else {
+          userData.updatedAt = dayjs(userData.updatedAt).format();
+          const { data } = await updateUser({
+            variables: { input: { ...userData, profile: { ...profile } } },
+          });
+          if (data.updateUser !== null) refetch();
+        }
+        setModalVisible(false);
       } catch (error) {
         await dispatch({
           type: ActionType.REQUEST_ERROR,

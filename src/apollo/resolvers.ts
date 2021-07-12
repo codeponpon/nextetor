@@ -137,6 +137,7 @@ export const resolvers: Resolvers<ApollowContext> = {
   },
   Mutation: {
     async createUser(parent, args, context) {
+      console.log("Create User Params", args.input);
       return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {

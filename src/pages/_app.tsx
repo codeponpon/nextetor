@@ -12,7 +12,7 @@ import { AbilityContext } from "@/components/Can";
 import { buildAbilityFor } from "@/services/appAbility";
 
 import wrapperStore from "@/redux";
-import { useApollo } from "@/utils/client";
+import useApollo from "@/utils/client";
 import AuthStorage from "@/utils/auth-storage";
 import Loading from "@/components/Loading";
 require("src/styles/index.less");
