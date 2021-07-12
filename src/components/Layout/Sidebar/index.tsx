@@ -3,7 +3,12 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 
 import { Menu, MenuTheme } from "antd";
-import { DashboardOutlined, TeamOutlined } from "@ant-design/icons";
+import {
+  ControlOutlined,
+  DashboardOutlined,
+  GlobalOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 const Sidebar = ({ theme }: { theme: MenuTheme }) => {
   const router = useRouter();
@@ -35,6 +40,20 @@ const Sidebar = ({ theme }: { theme: MenuTheme }) => {
         icon={<TeamOutlined />}
       >
         <span>Users</span>
+      </Menu.Item>
+      <Menu.Item
+        key="/admin/website"
+        onClick={() => router.push("/admin/website")}
+        icon={<GlobalOutlined />}
+      >
+        <span>Website</span>
+      </Menu.Item>
+      <Menu.Item
+        key="/admin/setting"
+        onClick={() => router.push("/admin/setting")}
+        icon={<ControlOutlined />}
+      >
+        <span>Setting</span>
       </Menu.Item>
     </Menu>
   );
