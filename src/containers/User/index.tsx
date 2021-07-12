@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
+  CreatedBy,
   CreateUserDocument,
   DeleteUserDocument,
   UpdateUserDocument,
   User,
   UsersDocument,
 } from "@/generated/client";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { IUserProps, List } from "./List";
 import { IModalProps, UserModal } from "./Modal";
 import { useDispatch } from "react-redux";
@@ -28,8 +29,14 @@ const UserContainer: React.FC = () => {
   const [createUser] = useMutation(CreateUserDocument);
   const [updateUser] = useMutation(UpdateUserDocument);
   const [deleteUser] = useMutation(DeleteUserDocument);
-  const { data, refetch } = useQuery(UsersDocument);
-  const users = data?.users;
+  const [getUsers, { data, loading: getUserLoading }] =
+    useLazyQuery(UsersDocument);
+  const {
+    data: userList,
+    loading: queryUserLoading,
+    refetch,
+  } = useQuery(UsersDocument);
+  const users = data?.users ? data?.users : userList?.users;
 
   const listProps: IUserProps = {
     list: users,
@@ -49,7 +56,13 @@ const UserContainer: React.FC = () => {
     action: modalType,
     item:
       modalType === "create"
-        ? { username: "", password: "", roleId: 4 }
+        ? {
+            username: "",
+            password: "",
+            roleId: 4,
+            createdBy: CreatedBy.Admin,
+            profile: { lineID: "", mobile: "" },
+          }
         : currentItem,
     visible: modalVisible || false,
     destroyOnClose: true,
@@ -101,11 +114,23 @@ const UserContainer: React.FC = () => {
     filter: {
       ...query,
     },
-    onFilterChange: (value: {
+    onFilterChange: (filter: {
       name?: string;
       createTime?: moment.Moment[] | string[];
     }) => {
-      console.log("On Filter Change");
+      setLoading(true);
+      if (filter.createTime?.length) {
+        getUsers({
+          variables: {
+            query: filter.name,
+            begin: filter.createTime[0],
+            end: filter.createTime[1],
+          },
+        });
+      } else {
+        getUsers({ variables: { query: filter.name } });
+      }
+      setLoading(false);
     },
     onAdd() {
       setModalVisible(true);
@@ -114,7 +139,7 @@ const UserContainer: React.FC = () => {
   };
 
   return (
-    <Page inner>
+    <Page inner loading={loading || getUserLoading || queryUserLoading}>
       <Filter {...filterProps} />
       <List {...listProps} />
       <UserModal {...listModal} />

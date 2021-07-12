@@ -1,5 +1,5 @@
-query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int) {
-  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit) {
+query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int, $query: String, $begin: Date, $end: Date) {
+  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit, query: $query, begin: $begin, end: $end) {
     id
     roleId
     username

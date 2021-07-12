@@ -90,7 +90,10 @@ const Filter: React.FC<iFilterProps> = ({ filter, onAdd, onFilterChange }) => {
       <Row gutter={24}>
         <Col {...ColProps} xl={{ span: 6 }} md={{ span: 8 }}>
           <Form.Item name="name">
-            <Search placeholder={`Search Name`} onSearch={handleSubmit} />
+            <Search
+              placeholder={`Search Username, First Name and Last Name`}
+              onSearch={handleSubmit}
+            />
           </Form.Item>
         </Col>
         <Col

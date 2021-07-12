@@ -107,11 +107,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             <Input type="hidden" />
           </FormItem>
         )}
-        <FormItem
-          name="createdBy"
-          style={{ display: "none" }}
-          initialValue="ADMIN"
-        >
+        <FormItem name="createdBy" style={{ display: "none" }}>
           <Input type="hidden" />
         </FormItem>
         <FormItem
@@ -229,7 +225,6 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           <FormItem
             name={["profile", "lineID"]}
             label={`Line ID`}
-            initialValue=""
             hasFeedback
             {...formItemLayout}
           >
