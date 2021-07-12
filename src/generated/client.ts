@@ -101,6 +101,9 @@ export type QueryUsersArgs = {
   createdBy?: Maybe<CreatedBy>;
   offset?: Maybe<Scalars['Int']>;
   limit?: Maybe<Scalars['Int']>;
+  query?: Maybe<Scalars['String']>;
+  begin?: Maybe<Scalars['Date']>;
+  end?: Maybe<Scalars['Date']>;
 };
 
 
@@ -292,6 +295,9 @@ export type UsersQueryVariables = Exact<{
   createdBy?: Maybe<CreatedBy>;
   offset?: Maybe<Scalars['Int']>;
   limit?: Maybe<Scalars['Int']>;
+  query?: Maybe<Scalars['String']>;
+  begin?: Maybe<Scalars['Date']>;
+  end?: Maybe<Scalars['Date']>;
 }>;
 
 
@@ -645,8 +651,16 @@ export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
 export const UsersDocument = gql`
-    query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int) {
-  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit) {
+    query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int, $query: String, $begin: Date, $end: Date) {
+  users(
+    status: $status
+    createdBy: $createdBy
+    offset: $offset
+    limit: $limit
+    query: $query
+    begin: $begin
+    end: $end
+  ) {
     id
     roleId
     username
@@ -694,6 +708,9 @@ export const UsersDocument = gql`
  *      createdBy: // value for 'createdBy'
  *      offset: // value for 'offset'
  *      limit: // value for 'limit'
+ *      query: // value for 'query'
+ *      begin: // value for 'begin'
+ *      end: // value for 'end'
  *   },
  * });
  */

@@ -10,7 +10,13 @@ import {
   DatePicker,
   message,
 } from "antd";
-import { RolesDocument, RoleType, User, UserStatus } from "@/generated/client";
+import {
+  CreateUserInput,
+  RolesDocument,
+  RoleType,
+  User,
+  UserStatus,
+} from "@/generated/client";
 import dayjs from "dayjs";
 import { useQuery } from "@apollo/client";
 import { startCase, toLower } from "lodash";
@@ -20,7 +26,7 @@ import { $enum } from "ts-enum-util";
 
 export interface IModalProps {
   action?: string;
-  item?: User;
+  item?: User | CreateUserInput;
   visible: boolean;
   destroyOnClose: boolean;
   maskClosable: boolean;
@@ -81,16 +87,27 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         initialValues={{ ...item }}
         layout="horizontal"
       >
-        <FormItem name="id" style={{ display: "none" }}>
-          <Input type="hidden" />
-        </FormItem>
-        <FormItem name="updatedAt" style={{ display: "none" }}>
-          <Input type="hidden" value={dayjs().format()} />
-        </FormItem>
-        <FormItem name={["profile", "updatedAt"]} style={{ display: "none" }}>
-          <Input type="hidden" value={dayjs().format()} />
-        </FormItem>
-        <FormItem name={["profile", "id"]} style={{ display: "none" }}>
+        {action === "update" && (
+          <FormItem name="id" style={{ display: "none" }}>
+            <Input type="hidden" />
+          </FormItem>
+        )}
+        {action === "update" && (
+          <FormItem name="updatedAt" style={{ display: "none" }}>
+            <Input type="hidden" value={dayjs().format()} />
+          </FormItem>
+        )}
+        {action === "update" && (
+          <FormItem name={["profile", "updatedAt"]} style={{ display: "none" }}>
+            <Input type="hidden" value={dayjs().format()} />
+          </FormItem>
+        )}
+        {action === "update" && (
+          <FormItem name={["profile", "id"]} style={{ display: "none" }}>
+            <Input type="hidden" />
+          </FormItem>
+        )}
+        <FormItem name="createdBy" style={{ display: "none" }}>
           <Input type="hidden" />
         </FormItem>
         <FormItem
@@ -100,8 +117,52 @@ export const UserModal: React.FC<IModalProps> = (props) => {
           hasFeedback
           {...formItemLayout}
         >
-          <Input disabled={true} />
+          <Input disabled={action !== "create"} />
         </FormItem>
+        {action === "create" && (
+          <FormItem
+            name="password"
+            label="Password"
+            rules={[
+              {
+                required: true,
+                message: "Please input your password!",
+              },
+              { min: 6, message: "Password must be minimum 6 characters." },
+            ]}
+            hasFeedback
+            {...formItemLayout}
+          >
+            <Input.Password />
+          </FormItem>
+        )}
+        {action === "create" && (
+          <FormItem
+            name="confirm"
+            label="Confirm Password"
+            dependencies={["password"]}
+            hasFeedback
+            {...formItemLayout}
+            rules={[
+              {
+                required: true,
+                message: "Please confirm your password!",
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("The passwords do not match!")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </FormItem>
+        )}
         <FormItem
           name="roleId"
           label="Role"

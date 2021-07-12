@@ -100,6 +100,9 @@ export type QueryUsersArgs = {
   createdBy?: Maybe<CreatedBy>;
   offset?: Maybe<Scalars['Int']>;
   limit?: Maybe<Scalars['Int']>;
+  query?: Maybe<Scalars['String']>;
+  begin?: Maybe<Scalars['Date']>;
+  end?: Maybe<Scalars['Date']>;
 };
 
 

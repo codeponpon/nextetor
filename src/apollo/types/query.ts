@@ -7,6 +7,9 @@ export default gql`
       createdBy: CreatedBy
       offset: Int
       limit: Int
+      query: String
+      begin: Date
+      end: Date
     ): [User!]!
     user(id: Int!): User
     roles: [Role!]!

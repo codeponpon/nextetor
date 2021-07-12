@@ -12,6 +12,7 @@ import { UserInputError } from "apollo-server-errors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import dayjs from "dayjs";
 
 interface ApollowContext {
   db: ServerlessMysql;
@@ -19,11 +20,69 @@ interface ApollowContext {
 }
 
 const findUsers = async (prisma: PrismaClient, args: any) => {
-  const { status, createdBy, offset, limit } = args;
+  const { status, createdBy, offset, limit, query, begin, end } = args;
+  let where = [];
+
+  if (begin && end) {
+    where.push({
+      createdAt: {
+        gte: new Date(begin).toISOString(),
+        lte: new Date(end + "T23:59:59.999Z").toISOString(),
+      },
+    });
+  }
+
+  if (begin && !end) {
+    where.push({
+      createdAt: {
+        gte: new Date(begin).toISOString(),
+      },
+    });
+  }
+
+  if (end && !begin) {
+    where.push({
+      createdAt: {
+        lte: new Date(end + "T23:59:59.999Z").toISOString(),
+      },
+    });
+  }
+
+  if (status) {
+    where.push({
+      status: status,
+    });
+  }
+
+  if (createdBy) {
+    where.push({
+      createdBy: createdBy,
+    });
+  }
+
+  if (query) {
+    where.push(
+      {
+        username: { contains: query },
+      },
+      {
+        profile: {
+          firstName: { contains: query },
+        },
+      },
+      {
+        profile: {
+          lastName: { contains: query },
+        },
+      }
+    );
+  }
+
+  const whereCaurse = where.length ? { OR: where } : {};
   const users = await prisma.user.findMany({
     skip: offset,
     take: limit,
-    where: { status: status, createdBy: createdBy },
+    where: whereCaurse,
     include: { profile: true, role: true },
   });
   return users.map((user) => ({
@@ -137,6 +196,7 @@ export const resolvers: Resolvers<ApollowContext> = {
   },
   Mutation: {
     async createUser(parent, args, context) {
+      console.log("Create User Params", args.input);
       return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {
