@@ -2,9 +2,9 @@ import {
   CreatedBy,
   CreateUserInput,
   Resolvers,
-  Role,
   RoleType,
   UserStatus,
+  ConfigStatus,
 } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
 // import { OkPacket } from "mysql";
@@ -12,7 +12,7 @@ import { UserInputError } from "apollo-server-errors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import dayjs from "dayjs";
+import GraphQLJSON from "graphql-type-json";
 
 interface ApollowContext {
   db: ServerlessMysql;
@@ -180,7 +180,18 @@ const createUserByParams = async (
   };
 };
 
+const getWebsiteById = async (
+  id: number,
+  db: ServerlessMysql,
+  prisma: PrismaClient
+) => {
+  return await prisma.website.findUnique({
+    where: { id: id },
+  });
+};
+
 export const resolvers: Resolvers<ApollowContext> = {
+  JSON: GraphQLJSON,
   Query: {
     async users(parent, args, context) {
       const users = await findUsers(context.prisma, args);
@@ -193,10 +204,21 @@ export const resolvers: Resolvers<ApollowContext> = {
       const roles = await context.prisma.role.findMany();
       return roles.map((role) => ({ ...role, type: role.type as RoleType }));
     },
+    async websites(parent, args, context) {
+      const websites = await context.prisma.website.findMany();
+      return websites.map((website) => ({
+        ...website,
+        status: website.status as ConfigStatus,
+      }));
+    },
+    async website(parent, args, context) {
+      const website = await getWebsiteById(args.id, context.db, context.prisma);
+      if (!website) throw new UserInputError("Could not found the website!");
+      return { ...website, status: website.status as ConfigStatus };
+    },
   },
   Mutation: {
     async createUser(parent, args, context) {
-      console.log("Create User Params", args.input);
       return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {
@@ -293,6 +315,28 @@ export const resolvers: Resolvers<ApollowContext> = {
           type: user?.role?.type as RoleType,
           createdAt: user.role?.createdAt.toString(),
         },
+      };
+    },
+    async createWebsite(parent, args, context) {
+      const website = await context.prisma.website.create({
+        data: { ...args.input },
+      });
+      return {
+        ...website,
+        status: website.status as ConfigStatus,
+      };
+    },
+    async deleteWebsite(parent, args, context) {
+      const website = await getWebsiteById(args.id, context.db, context.prisma);
+      if (!website) throw new UserInputError("Could not found the website!");
+
+      await context.prisma.website.delete({
+        where: { id: args.id },
+      });
+
+      return {
+        ...website,
+        status: website.status as ConfigStatus,
       };
     },
   },

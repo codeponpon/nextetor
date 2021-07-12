@@ -7,5 +7,7 @@ export default gql`
     deleteUser(id: Int!): User
     deleteProfile(id: Int, userId: Int): User
     signIn(input: SignInInput!): User
+    createWebsite(input: CreateWebsiteInput!): Website
+    deleteWebsite(id: Int!): Website
   }
 `;

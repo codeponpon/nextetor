@@ -4,6 +4,7 @@ import AppLayout from "@/components/Layout/AppLayout";
 import Head from "@/components/Head";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Page from "@/components/Page";
+import { WebsitePage } from "@/containers/Website";
 
 const UserDetail = ({
   initialApolloState,
@@ -12,7 +13,7 @@ const UserDetail = ({
     <AppLayout alwaysDarkMode title="Website">
       <Head title="Website" />
       <Page inner>
-        <h1>Website</h1>
+        <WebsitePage />
       </Page>
     </AppLayout>
   );

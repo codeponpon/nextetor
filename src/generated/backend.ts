@@ -12,6 +12,33 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: any;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: any;
+};
+
+export enum ConfigStatus {
+  Activated = 'ACTIVATED',
+  Deactivated = 'DEACTIVATED'
+}
+
+export enum ConfigType {
+  CloseWebsite = 'CLOSE_WEBSITE',
+  CloseLogin = 'CLOSE_LOGIN',
+  CloseRegister = 'CLOSE_REGISTER',
+  CloseWithdraw = 'CLOSE_WITHDRAW',
+  CloseDeposit = 'CLOSE_DEPOSIT',
+  CloseLaunchgame = 'CLOSE_LAUNCHGAME',
+  Message = 'MESSAGE'
+}
+
+export type CreateMaintenanceInput = {
+  configType?: Maybe<ConfigType>;
+  configStatus?: Maybe<ConfigStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  message?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
 };
 
 export type CreateProfileInput = {
@@ -32,11 +59,36 @@ export type CreateUserInput = {
   profile?: Maybe<CreateProfileInput>;
 };
 
+export type CreateWebsiteInput = {
+  userId: Scalars['Int'];
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  maintenance?: Maybe<CreateMaintenanceInput>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export enum CreatedBy {
   Website = 'WEBSITE',
   Admin = 'ADMIN'
 }
 
+
+
+export type Maintenance = {
+  __typename?: 'Maintenance';
+  id: Scalars['Int'];
+  website: Website;
+  configType?: Maybe<ConfigType>;
+  configStatus?: Maybe<ConfigStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  message?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -45,6 +97,8 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
+  createWebsite?: Maybe<Website>;
+  deleteWebsite?: Maybe<Website>;
 };
 
 
@@ -73,6 +127,16 @@ export type MutationSignInArgs = {
   input: SignInInput;
 };
 
+
+export type MutationCreateWebsiteArgs = {
+  input: CreateWebsiteInput;
+};
+
+
+export type MutationDeleteWebsiteArgs = {
+  id: Scalars['Int'];
+};
+
 export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
@@ -92,6 +156,8 @@ export type Query = {
   users: Array<User>;
   user?: Maybe<User>;
   roles: Array<Role>;
+  websites?: Maybe<Array<Website>>;
+  website?: Maybe<Website>;
 };
 
 
@@ -107,6 +173,11 @@ export type QueryUsersArgs = {
 
 
 export type QueryUserArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryWebsiteArgs = {
   id: Scalars['Int'];
 };
 
@@ -177,6 +248,19 @@ export enum UserStatus {
   Inactive = 'INACTIVE',
   Ban = 'BAN'
 }
+
+export type Website = {
+  __typename?: 'Website';
+  id: Scalars['Int'];
+  userId: Scalars['Int'];
+  maintenance?: Maybe<Maintenance>;
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
 
 
 
@@ -256,12 +340,18 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  CreateProfileInput: CreateProfileInput;
+  ConfigStatus: ConfigStatus;
+  ConfigType: ConfigType;
+  CreateMaintenanceInput: CreateMaintenanceInput;
   String: ResolverTypeWrapper<Scalars['String']>;
+  CreateProfileInput: CreateProfileInput;
   CreateUserInput: CreateUserInput;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  CreateWebsiteInput: CreateWebsiteInput;
   CreatedBy: CreatedBy;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  JSON: ResolverTypeWrapper<Scalars['JSON']>;
+  Maintenance: ResolverTypeWrapper<Maintenance>;
   Mutation: ResolverTypeWrapper<{}>;
   Profile: ResolverTypeWrapper<Profile>;
   Query: ResolverTypeWrapper<{}>;
@@ -272,16 +362,21 @@ export type ResolversTypes = {
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
+  Website: ResolverTypeWrapper<Website>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  CreateProfileInput: CreateProfileInput;
+  CreateMaintenanceInput: CreateMaintenanceInput;
   String: Scalars['String'];
+  CreateProfileInput: CreateProfileInput;
   CreateUserInput: CreateUserInput;
   Int: Scalars['Int'];
+  CreateWebsiteInput: CreateWebsiteInput;
   Date: Scalars['Date'];
+  JSON: Scalars['JSON'];
+  Maintenance: Maintenance;
   Mutation: {};
   Profile: Profile;
   Query: {};
@@ -290,6 +385,7 @@ export type ResolversParentTypes = {
   UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
+  Website: Website;
   Boolean: Scalars['Boolean'];
 };
 
@@ -297,12 +393,31 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+  name: 'JSON';
+}
+
+export type MaintenanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Maintenance'] = ResolversParentTypes['Maintenance']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  website?: Resolver<ResolversTypes['Website'], ParentType, ContextType>;
+  configType?: Resolver<Maybe<ResolversTypes['ConfigType']>, ParentType, ContextType>;
+  configStatus?: Resolver<Maybe<ResolversTypes['ConfigStatus']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'input'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   deleteProfile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteProfileArgs, never>>;
   signIn?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
+  createWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
+  deleteWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationDeleteWebsiteArgs, 'id'>>;
 };
 
 export type ProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['Profile'] = ResolversParentTypes['Profile']> = {
@@ -323,6 +438,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   roles?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
+  websites?: Resolver<Maybe<Array<ResolversTypes['Website']>>, ParentType, ContextType>;
+  website?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<QueryWebsiteArgs, 'id'>>;
 };
 
 export type RoleResolvers<ContextType = any, ParentType extends ResolversParentTypes['Role'] = ResolversParentTypes['Role']> = {
@@ -351,13 +468,29 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type WebsiteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Website'] = ResolversParentTypes['Website']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maintenance?: Resolver<Maybe<ResolversTypes['Maintenance']>, ParentType, ContextType>;
+  domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subdomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  settings?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['ConfigStatus']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType;
+  JSON?: GraphQLScalarType;
+  Maintenance?: MaintenanceResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Role?: RoleResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  Website?: WebsiteResolvers<ContextType>;
 };
 
 

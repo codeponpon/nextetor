@@ -1,0 +1,22 @@
+query Website($id: Int!) {
+  website(id: $id) {
+    id
+    userId
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}

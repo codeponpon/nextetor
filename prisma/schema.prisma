@@ -31,6 +31,21 @@ enum RoleType {
   CALL_CENTER
 }
 
+enum ConfigType {
+  CLOSE_WEBSITE
+  CLOSE_LOGIN
+  CLOSE_REGISTER
+  CLOSE_WITHDRAW
+  CLOSE_DEPOSIT
+  CLOSE_LAUNCHGAME
+  MESSAGE
+}
+
+enum ConfigStatus {
+  ACTIVATED
+  DEACTIVATED
+}
+
 // END ENUM
 
 // START MODEL
@@ -39,6 +54,7 @@ model User {
   profile   Profile?
   role      Role       @relation(fields: [roleId], references: [id])
   roleId    Int
+  website   Website[]
   username  String     @unique
   password  String
   createdBy createdBy? @default(WEBSITE)
@@ -73,4 +89,31 @@ model Role {
   thirdPartyInfo String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime? @updatedAt
+}
+
+// Website config
+model Website {
+  id          Int           @id @default(autoincrement())
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  maintenance Maintenance?
+  domain      String?       @unique
+  subdomain   String?
+  settings    Json?
+  status      ConfigStatus? @default(DEACTIVATED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+}
+
+model Maintenance {
+  id           Int          @id @default(autoincrement())
+  website      Website      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteId    Int
+  configType   ConfigType
+  configStatus ConfigStatus
+  startDate    DateTime?
+  endDate      DateTime?
+  message      String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?    @updatedAt
 }

@@ -48,4 +48,25 @@ export default gql`
     email: String
     updatedAt: Date!
   }
+
+  input CreateMaintenanceInput {
+    configType: ConfigType
+    configStatus: ConfigStatus
+    startDate: Date
+    endDate: Date
+    message: String
+    createdAt: Date
+    updatedAt: Date
+  }
+
+  input CreateWebsiteInput {
+    userId: Int!
+    domain: String
+    subdomain: String
+    settings: JSON
+    status: ConfigStatus
+    maintenance: CreateMaintenanceInput
+    createdAt: Date
+    updatedAt: Date
+  }
 `;

@@ -13,6 +13,33 @@ export type Scalars = {
   Int: number;
   Float: number;
   Date: any;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: any;
+};
+
+export enum ConfigStatus {
+  Activated = 'ACTIVATED',
+  Deactivated = 'DEACTIVATED'
+}
+
+export enum ConfigType {
+  CloseWebsite = 'CLOSE_WEBSITE',
+  CloseLogin = 'CLOSE_LOGIN',
+  CloseRegister = 'CLOSE_REGISTER',
+  CloseWithdraw = 'CLOSE_WITHDRAW',
+  CloseDeposit = 'CLOSE_DEPOSIT',
+  CloseLaunchgame = 'CLOSE_LAUNCHGAME',
+  Message = 'MESSAGE'
+}
+
+export type CreateMaintenanceInput = {
+  configType?: Maybe<ConfigType>;
+  configStatus?: Maybe<ConfigStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  message?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
 };
 
 export type CreateProfileInput = {
@@ -33,11 +60,36 @@ export type CreateUserInput = {
   profile?: Maybe<CreateProfileInput>;
 };
 
+export type CreateWebsiteInput = {
+  userId: Scalars['Int'];
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  maintenance?: Maybe<CreateMaintenanceInput>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export enum CreatedBy {
   Website = 'WEBSITE',
   Admin = 'ADMIN'
 }
 
+
+
+export type Maintenance = {
+  __typename?: 'Maintenance';
+  id: Scalars['Int'];
+  website: Website;
+  configType?: Maybe<ConfigType>;
+  configStatus?: Maybe<ConfigStatus>;
+  startDate?: Maybe<Scalars['Date']>;
+  endDate?: Maybe<Scalars['Date']>;
+  message?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -46,6 +98,8 @@ export type Mutation = {
   deleteUser?: Maybe<User>;
   deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
+  createWebsite?: Maybe<Website>;
+  deleteWebsite?: Maybe<Website>;
 };
 
 
@@ -74,6 +128,16 @@ export type MutationSignInArgs = {
   input: SignInInput;
 };
 
+
+export type MutationCreateWebsiteArgs = {
+  input: CreateWebsiteInput;
+};
+
+
+export type MutationDeleteWebsiteArgs = {
+  id: Scalars['Int'];
+};
+
 export type Profile = {
   __typename?: 'Profile';
   id: Scalars['Int'];
@@ -93,6 +157,8 @@ export type Query = {
   users: Array<User>;
   user?: Maybe<User>;
   roles: Array<Role>;
+  websites?: Maybe<Array<Website>>;
+  website?: Maybe<Website>;
 };
 
 
@@ -108,6 +174,11 @@ export type QueryUsersArgs = {
 
 
 export type QueryUserArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryWebsiteArgs = {
   id: Scalars['Int'];
 };
 
@@ -178,6 +249,19 @@ export enum UserStatus {
   Inactive = 'INACTIVE',
   Ban = 'BAN'
 }
+
+export type Website = {
+  __typename?: 'Website';
+  id: Scalars['Int'];
+  userId: Scalars['Int'];
+  maintenance?: Maybe<Maintenance>;
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
 
 export type CreateUserMutationVariables = Exact<{
   input: CreateUserInput;
@@ -314,6 +398,38 @@ export type UsersQuery = (
       & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
+);
+
+export type WebsiteQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type WebsiteQuery = (
+  { __typename?: 'Query' }
+  & { website?: Maybe<(
+    { __typename?: 'Website' }
+    & Pick<Website, 'id' | 'userId' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { maintenance?: Maybe<(
+      { __typename?: 'Maintenance' }
+      & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )> }
+  )> }
+);
+
+export type WebsitesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type WebsitesQuery = (
+  { __typename?: 'Query' }
+  & { websites?: Maybe<Array<(
+    { __typename?: 'Website' }
+    & Pick<Website, 'id' | 'userId' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { maintenance?: Maybe<(
+      { __typename?: 'Maintenance' }
+      & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )> }
+  )>> }
 );
 
 
@@ -725,3 +841,106 @@ export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<User
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export const WebsiteDocument = gql`
+    query Website($id: Int!) {
+  website(id: $id) {
+    id
+    userId
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useWebsiteQuery__
+ *
+ * To run a query within a React component, call `useWebsiteQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWebsiteQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWebsiteQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useWebsiteQuery(baseOptions: Apollo.QueryHookOptions<WebsiteQuery, WebsiteQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<WebsiteQuery, WebsiteQueryVariables>(WebsiteDocument, options);
+      }
+export function useWebsiteLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WebsiteQuery, WebsiteQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<WebsiteQuery, WebsiteQueryVariables>(WebsiteDocument, options);
+        }
+export type WebsiteQueryHookResult = ReturnType<typeof useWebsiteQuery>;
+export type WebsiteLazyQueryHookResult = ReturnType<typeof useWebsiteLazyQuery>;
+export type WebsiteQueryResult = Apollo.QueryResult<WebsiteQuery, WebsiteQueryVariables>;
+export const WebsitesDocument = gql`
+    query Websites {
+  websites {
+    id
+    userId
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useWebsitesQuery__
+ *
+ * To run a query within a React component, call `useWebsitesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWebsitesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWebsitesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useWebsitesQuery(baseOptions?: Apollo.QueryHookOptions<WebsitesQuery, WebsitesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<WebsitesQuery, WebsitesQueryVariables>(WebsitesDocument, options);
+      }
+export function useWebsitesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WebsitesQuery, WebsitesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<WebsitesQuery, WebsitesQueryVariables>(WebsitesDocument, options);
+        }
+export type WebsitesQueryHookResult = ReturnType<typeof useWebsitesQuery>;
+export type WebsitesLazyQueryHookResult = ReturnType<typeof useWebsitesLazyQuery>;
+export type WebsitesQueryResult = Apollo.QueryResult<WebsitesQuery, WebsitesQueryVariables>;
