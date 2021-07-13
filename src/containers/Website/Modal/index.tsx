@@ -1,28 +1,16 @@
 import React, { createRef } from "react";
 
-import {
-  Form,
-  Input,
-  Modal,
-  FormInstance,
-  Card,
-  Select,
-  DatePicker,
-  message,
-} from "antd";
+import { Form, Input, Modal, FormInstance, Select, message } from "antd";
 import {
   ConfigStatus,
   CreateWebsiteInput,
   RolesDocument,
-  RoleType,
-  UserStatus,
   Website,
 } from "@/generated/client";
 import dayjs from "dayjs";
 import { useQuery } from "@apollo/client";
-import { startCase, toLower } from "lodash";
 import AuthStorage from "@/utils/auth-storage";
-import moment from "moment";
+import { startCase } from "lodash";
 import { $enum } from "ts-enum-util";
 
 export interface IWebsiteModalProps {
@@ -131,22 +119,14 @@ export const WebsiteModal: React.FC<IWebsiteModalProps> = (props) => {
         </FormItem>
         <FormItem name="status" label="status" hasFeedback {...formItemLayout}>
           <Select placeholder={`Please select status`}>
-            <Option key={ConfigStatus.Activated} value={ConfigStatus.Activated}>
-              {ConfigStatus.Activated}
-            </Option>
-            <Option
-              key={ConfigStatus.Deactivated}
-              value={ConfigStatus.Deactivated}
-            >
-              {ConfigStatus.Deactivated}
-            </Option>
+            {$enum(ConfigStatus).map((status: string) => (
+              <Option key={status} value={status}>
+                {startCase(status)}
+              </Option>
+            ))}
           </Select>
         </FormItem>
       </Form>
     </Modal>
   );
 };
-// domain
-//     subdomain
-//     settings
-//     status

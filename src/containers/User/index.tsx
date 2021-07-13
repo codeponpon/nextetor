@@ -4,7 +4,6 @@ import {
   CreateUserDocument,
   DeleteUserDocument,
   UpdateUserDocument,
-  User,
   UsersDocument,
 } from "@/generated/client";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
@@ -16,7 +15,6 @@ import dayjs from "dayjs";
 import Filter, { iFilterProps } from "@/containers/User/Filter";
 import { useRouter } from "next/router";
 import Page from "@/components/Page";
-import { stringify } from "query-string";
 
 const UserContainer: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
