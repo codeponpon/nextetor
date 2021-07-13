@@ -1,5 +1,5 @@
-query Website($id: Int!) {
-  website(id: $id) {
+mutation DeleteWebsite($id: Int!) {
+  deleteWebsite(id: $id) {
     id
     user {
       id

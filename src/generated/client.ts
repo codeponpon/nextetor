@@ -62,6 +62,7 @@ export type CreateUserInput = {
 
 export type CreateWebsiteInput = {
   userId: Scalars['Int'];
+  name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
   settings?: Maybe<Scalars['JSON']>;
@@ -81,7 +82,8 @@ export enum CreatedBy {
 export type Maintenance = {
   __typename?: 'Maintenance';
   id: Scalars['Int'];
-  website: Website;
+  websiteId: Scalars['Int'];
+  website?: Maybe<Website>;
   configType?: Maybe<ConfigType>;
   configStatus?: Maybe<ConfigStatus>;
   startDate?: Maybe<Scalars['Date']>;
@@ -99,6 +101,7 @@ export type Mutation = {
   deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
   createWebsite?: Maybe<Website>;
+  updateWebsite?: Maybe<Website>;
   deleteWebsite?: Maybe<Website>;
 };
 
@@ -131,6 +134,11 @@ export type MutationSignInArgs = {
 
 export type MutationCreateWebsiteArgs = {
   input: CreateWebsiteInput;
+};
+
+
+export type MutationUpdateWebsiteArgs = {
+  input: UpdateWebsiteInput;
 };
 
 
@@ -175,6 +183,12 @@ export type QueryUsersArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryWebsitesArgs = {
+  status?: Maybe<ConfigStatus>;
+  name?: Maybe<Scalars['String']>;
 };
 
 
@@ -229,6 +243,18 @@ export type UpdateUserInput = {
   updatedAt: Scalars['Date'];
 };
 
+export type UpdateWebsiteInput = {
+  id: Scalars['Int'];
+  userId: Scalars['Int'];
+  name: Scalars['String'];
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  maintenance?: Maybe<CreateMaintenanceInput>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['Int'];
@@ -254,7 +280,9 @@ export type Website = {
   __typename?: 'Website';
   id: Scalars['Int'];
   userId: Scalars['Int'];
+  user?: Maybe<User>;
   maintenance?: Maybe<Maintenance>;
+  name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
   settings?: Maybe<Scalars['JSON']>;
@@ -283,6 +311,26 @@ export type CreateUserMutation = (
   )> }
 );
 
+export type CreateWebsiteMutationVariables = Exact<{
+  input: CreateWebsiteInput;
+}>;
+
+
+export type CreateWebsiteMutation = (
+  { __typename?: 'Mutation' }
+  & { createWebsite?: Maybe<(
+    { __typename?: 'Website' }
+    & Pick<Website, 'id' | 'userId' | 'name' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, maintenance?: Maybe<(
+      { __typename?: 'Maintenance' }
+      & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )> }
+  )> }
+);
+
 export type DeleteUserMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -299,6 +347,26 @@ export type DeleteUserMutation = (
     )>, role?: Maybe<(
       { __typename?: 'Role' }
       & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
+    )> }
+  )> }
+);
+
+export type DeleteWebsiteMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteWebsiteMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteWebsite?: Maybe<(
+    { __typename?: 'Website' }
+    & Pick<Website, 'id' | 'userId' | 'name' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, maintenance?: Maybe<(
+      { __typename?: 'Maintenance' }
+      & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -350,6 +418,26 @@ export type UpdateUserMutation = (
     )>, role?: Maybe<(
       { __typename?: 'Role' }
       & Pick<Role, 'id' | 'name' | 'type' | 'thirdPartyInfo' | 'createdAt' | 'updatedAt'>
+    )> }
+  )> }
+);
+
+export type UpdateWebsiteMutationVariables = Exact<{
+  input: UpdateWebsiteInput;
+}>;
+
+
+export type UpdateWebsiteMutation = (
+  { __typename?: 'Mutation' }
+  & { updateWebsite?: Maybe<(
+    { __typename?: 'Website' }
+    & Pick<Website, 'id' | 'userId' | 'name' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, maintenance?: Maybe<(
+      { __typename?: 'Maintenance' }
+      & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -409,23 +497,32 @@ export type WebsiteQuery = (
   { __typename?: 'Query' }
   & { website?: Maybe<(
     { __typename?: 'Website' }
-    & Pick<Website, 'id' | 'userId' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
-    & { maintenance?: Maybe<(
+    & Pick<Website, 'id' | 'userId' | 'name' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
 
-export type WebsitesQueryVariables = Exact<{ [key: string]: never; }>;
+export type WebsitesQueryVariables = Exact<{
+  status?: Maybe<ConfigStatus>;
+  name?: Maybe<Scalars['String']>;
+}>;
 
 
 export type WebsitesQuery = (
   { __typename?: 'Query' }
   & { websites?: Maybe<Array<(
     { __typename?: 'Website' }
-    & Pick<Website, 'id' | 'userId' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
-    & { maintenance?: Maybe<(
+    & Pick<Website, 'id' | 'userId' | 'name' | 'domain' | 'subdomain' | 'settings' | 'status' | 'createdAt' | 'updatedAt'>
+    & { user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
     )> }
@@ -491,6 +588,61 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const CreateWebsiteDocument = gql`
+    mutation CreateWebsite($input: CreateWebsiteInput!) {
+  createWebsite(input: $input) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateWebsiteMutationFn = Apollo.MutationFunction<CreateWebsiteMutation, CreateWebsiteMutationVariables>;
+
+/**
+ * __useCreateWebsiteMutation__
+ *
+ * To run a mutation, you first call `useCreateWebsiteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateWebsiteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createWebsiteMutation, { data, loading, error }] = useCreateWebsiteMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateWebsiteMutation(baseOptions?: Apollo.MutationHookOptions<CreateWebsiteMutation, CreateWebsiteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateWebsiteMutation, CreateWebsiteMutationVariables>(CreateWebsiteDocument, options);
+      }
+export type CreateWebsiteMutationHookResult = ReturnType<typeof useCreateWebsiteMutation>;
+export type CreateWebsiteMutationResult = Apollo.MutationResult<CreateWebsiteMutation>;
+export type CreateWebsiteMutationOptions = Apollo.BaseMutationOptions<CreateWebsiteMutation, CreateWebsiteMutationVariables>;
 export const DeleteUserDocument = gql`
     mutation DeleteUser($id: Int!) {
   deleteUser(id: $id) {
@@ -549,6 +701,61 @@ export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const DeleteWebsiteDocument = gql`
+    mutation DeleteWebsite($id: Int!) {
+  deleteWebsite(id: $id) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type DeleteWebsiteMutationFn = Apollo.MutationFunction<DeleteWebsiteMutation, DeleteWebsiteMutationVariables>;
+
+/**
+ * __useDeleteWebsiteMutation__
+ *
+ * To run a mutation, you first call `useDeleteWebsiteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteWebsiteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteWebsiteMutation, { data, loading, error }] = useDeleteWebsiteMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteWebsiteMutation(baseOptions?: Apollo.MutationHookOptions<DeleteWebsiteMutation, DeleteWebsiteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteWebsiteMutation, DeleteWebsiteMutationVariables>(DeleteWebsiteDocument, options);
+      }
+export type DeleteWebsiteMutationHookResult = ReturnType<typeof useDeleteWebsiteMutation>;
+export type DeleteWebsiteMutationResult = Apollo.MutationResult<DeleteWebsiteMutation>;
+export type DeleteWebsiteMutationOptions = Apollo.BaseMutationOptions<DeleteWebsiteMutation, DeleteWebsiteMutationVariables>;
 export const RolesDocument = gql`
     query Roles {
   roles {
@@ -705,6 +912,61 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const UpdateWebsiteDocument = gql`
+    mutation UpdateWebsite($input: UpdateWebsiteInput!) {
+  updateWebsite(input: $input) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type UpdateWebsiteMutationFn = Apollo.MutationFunction<UpdateWebsiteMutation, UpdateWebsiteMutationVariables>;
+
+/**
+ * __useUpdateWebsiteMutation__
+ *
+ * To run a mutation, you first call `useUpdateWebsiteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateWebsiteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateWebsiteMutation, { data, loading, error }] = useUpdateWebsiteMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateWebsiteMutation(baseOptions?: Apollo.MutationHookOptions<UpdateWebsiteMutation, UpdateWebsiteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateWebsiteMutation, UpdateWebsiteMutationVariables>(UpdateWebsiteDocument, options);
+      }
+export type UpdateWebsiteMutationHookResult = ReturnType<typeof useUpdateWebsiteMutation>;
+export type UpdateWebsiteMutationResult = Apollo.MutationResult<UpdateWebsiteMutation>;
+export type UpdateWebsiteMutationOptions = Apollo.BaseMutationOptions<UpdateWebsiteMutation, UpdateWebsiteMutationVariables>;
 export const UserDocument = gql`
     query User($id: Int!) {
   user(id: $id) {
@@ -845,7 +1107,12 @@ export const WebsiteDocument = gql`
     query Website($id: Int!) {
   website(id: $id) {
     id
+    user {
+      id
+      username
+    }
     userId
+    name
     domain
     subdomain
     settings
@@ -894,10 +1161,15 @@ export type WebsiteQueryHookResult = ReturnType<typeof useWebsiteQuery>;
 export type WebsiteLazyQueryHookResult = ReturnType<typeof useWebsiteLazyQuery>;
 export type WebsiteQueryResult = Apollo.QueryResult<WebsiteQuery, WebsiteQueryVariables>;
 export const WebsitesDocument = gql`
-    query Websites {
-  websites {
+    query Websites($status: ConfigStatus, $name: String) {
+  websites(status: $status, name: $name) {
     id
+    user {
+      id
+      username
+    }
     userId
+    name
     domain
     subdomain
     settings
@@ -930,6 +1202,8 @@ export const WebsitesDocument = gql`
  * @example
  * const { data, loading, error } = useWebsitesQuery({
  *   variables: {
+ *      status: // value for 'status'
+ *      name: // value for 'name'
  *   },
  * });
  */

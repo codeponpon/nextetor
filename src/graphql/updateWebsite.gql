@@ -1,5 +1,5 @@
-query Website($id: Int!) {
-  website(id: $id) {
+mutation UpdateWebsite($input: UpdateWebsiteInput!) {
+  updateWebsite(input: $input) {
     id
     user {
       id

@@ -6,7 +6,7 @@ import { User } from "@/generated/client";
 import { AbilityContext } from "@/components/Can";
 
 interface iProps {
-  record: User;
+  record: any;
   onMenuClick: (e: MenuInfo) => void;
   menuOptions: { key: any; name: string }[];
   buttonStyle?: object;
@@ -23,6 +23,10 @@ const DropOption: React.FC<iProps> = ({
   const ability = useContext(AbilityContext);
   const menu = menuOptions.map((item) => {
     const menu = [];
+    if (item.key === 3) {
+      menu.push(<Menu.Item key={item.key}>{item.name}</Menu.Item>);
+    }
+
     if (item.key === 1) {
       menu.push(
         <Menu.Item key={item.key} disabled={!ability.can("update", record)}>

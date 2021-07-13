@@ -97,6 +97,7 @@ model Website {
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   maintenance Maintenance?
+  name        String
   domain      String?       @unique
   subdomain   String?
   settings    Json?

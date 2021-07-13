@@ -68,7 +68,7 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         message.loading({ content: "Loading...", key: "updatable" });
         setTimeout(() => {
           message.success({
-            content: "Loaded!",
+            content: "Done!",
             key: "updatable",
             duration: 2,
           });

@@ -61,6 +61,7 @@ export type CreateUserInput = {
 
 export type CreateWebsiteInput = {
   userId: Scalars['Int'];
+  name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
   settings?: Maybe<Scalars['JSON']>;
@@ -80,7 +81,8 @@ export enum CreatedBy {
 export type Maintenance = {
   __typename?: 'Maintenance';
   id: Scalars['Int'];
-  website: Website;
+  websiteId: Scalars['Int'];
+  website?: Maybe<Website>;
   configType?: Maybe<ConfigType>;
   configStatus?: Maybe<ConfigStatus>;
   startDate?: Maybe<Scalars['Date']>;
@@ -98,6 +100,7 @@ export type Mutation = {
   deleteProfile?: Maybe<User>;
   signIn?: Maybe<User>;
   createWebsite?: Maybe<Website>;
+  updateWebsite?: Maybe<Website>;
   deleteWebsite?: Maybe<Website>;
 };
 
@@ -130,6 +133,11 @@ export type MutationSignInArgs = {
 
 export type MutationCreateWebsiteArgs = {
   input: CreateWebsiteInput;
+};
+
+
+export type MutationUpdateWebsiteArgs = {
+  input: UpdateWebsiteInput;
 };
 
 
@@ -174,6 +182,12 @@ export type QueryUsersArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryWebsitesArgs = {
+  status?: Maybe<ConfigStatus>;
+  name?: Maybe<Scalars['String']>;
 };
 
 
@@ -228,6 +242,18 @@ export type UpdateUserInput = {
   updatedAt: Scalars['Date'];
 };
 
+export type UpdateWebsiteInput = {
+  id: Scalars['Int'];
+  userId: Scalars['Int'];
+  name: Scalars['String'];
+  domain?: Maybe<Scalars['String']>;
+  subdomain?: Maybe<Scalars['String']>;
+  settings?: Maybe<Scalars['JSON']>;
+  status?: Maybe<ConfigStatus>;
+  maintenance?: Maybe<CreateMaintenanceInput>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['Int'];
@@ -253,7 +279,9 @@ export type Website = {
   __typename?: 'Website';
   id: Scalars['Int'];
   userId: Scalars['Int'];
+  user?: Maybe<User>;
   maintenance?: Maybe<Maintenance>;
+  name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
   settings?: Maybe<Scalars['JSON']>;
@@ -360,6 +388,7 @@ export type ResolversTypes = {
   SignInInput: SignInInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
+  UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
   Website: ResolverTypeWrapper<Website>;
@@ -384,6 +413,7 @@ export type ResolversParentTypes = {
   SignInInput: SignInInput;
   UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
+  UpdateWebsiteInput: UpdateWebsiteInput;
   User: User;
   Website: Website;
   Boolean: Scalars['Boolean'];
@@ -399,7 +429,8 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type MaintenanceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Maintenance'] = ResolversParentTypes['Maintenance']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  website?: Resolver<ResolversTypes['Website'], ParentType, ContextType>;
+  websiteId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  website?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType>;
   configType?: Resolver<Maybe<ResolversTypes['ConfigType']>, ParentType, ContextType>;
   configStatus?: Resolver<Maybe<ResolversTypes['ConfigStatus']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
@@ -417,6 +448,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteProfile?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteProfileArgs, never>>;
   signIn?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'input'>>;
   createWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationCreateWebsiteArgs, 'input'>>;
+  updateWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationUpdateWebsiteArgs, 'input'>>;
   deleteWebsite?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<MutationDeleteWebsiteArgs, 'id'>>;
 };
 
@@ -438,7 +470,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   roles?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
-  websites?: Resolver<Maybe<Array<ResolversTypes['Website']>>, ParentType, ContextType>;
+  websites?: Resolver<Maybe<Array<ResolversTypes['Website']>>, ParentType, ContextType, RequireFields<QueryWebsitesArgs, never>>;
   website?: Resolver<Maybe<ResolversTypes['Website']>, ParentType, ContextType, RequireFields<QueryWebsiteArgs, 'id'>>;
 };
 
@@ -471,7 +503,9 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type WebsiteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Website'] = ResolversParentTypes['Website']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   maintenance?: Resolver<Maybe<ResolversTypes['Maintenance']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subdomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   settings?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;

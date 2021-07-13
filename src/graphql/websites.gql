@@ -1,7 +1,12 @@
-query Websites {
-  websites {
+query Websites($status: ConfigStatus, $name: String) {
+  websites(status: $status, name: $name) {
     id
+    user {
+      id
+      username
+    }
     userId
+    name
     domain
     subdomain
     settings

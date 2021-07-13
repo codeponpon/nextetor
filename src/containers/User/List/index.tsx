@@ -14,11 +14,6 @@ export interface IUserProps {
   list: User[];
   onDeleteItem: (id: any) => void;
   onEditItem: (u: User, a?: string) => void;
-  // loading: boolean;
-  // rowSelection: object;
-  // onChange?: (pagination: any, filters: any, sorter: any) => void;
-  // location?: object;
-  // pagination?: TablePaginationConfig;
 }
 
 const { confirm } = Modal;

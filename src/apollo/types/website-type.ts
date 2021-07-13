@@ -22,7 +22,9 @@ export default gql`
   type Website {
     id: Int!
     userId: Int!
+    user: User
     maintenance: Maintenance
+    name: String!
     domain: String
     subdomain: String
     settings: JSON
@@ -33,7 +35,8 @@ export default gql`
 
   type Maintenance {
     id: Int!
-    website: Website!
+    websiteId: Int!
+    website: Website
     configType: ConfigType
     configStatus: ConfigStatus
     startDate: Date

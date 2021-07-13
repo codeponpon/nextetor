@@ -9,6 +9,7 @@ import {
   GlobalOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import { ConfigStatus } from "@/generated/client";
 
 const Sidebar = ({ theme }: { theme: MenuTheme }) => {
   const router = useRouter();
@@ -43,12 +44,18 @@ const Sidebar = ({ theme }: { theme: MenuTheme }) => {
       </Menu.Item>
       <Menu.Item
         key="/admin/website"
-        onClick={() => router.push("/admin/website")}
+        onClick={() =>
+          router.push({
+            pathname: "/admin/website",
+            query: { status: ConfigStatus.Activated },
+          })
+        }
         icon={<GlobalOutlined />}
       >
         <span>Website</span>
       </Menu.Item>
       <Menu.Item
+        style={{ display: "none" }}
         key="/admin/setting"
         onClick={() => router.push("/admin/setting")}
         icon={<ControlOutlined />}

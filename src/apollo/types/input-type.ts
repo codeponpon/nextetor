@@ -61,12 +61,25 @@ export default gql`
 
   input CreateWebsiteInput {
     userId: Int!
+    name: String!
     domain: String
     subdomain: String
     settings: JSON
     status: ConfigStatus
     maintenance: CreateMaintenanceInput
     createdAt: Date
+    updatedAt: Date
+  }
+
+  input UpdateWebsiteInput {
+    id: Int!
+    userId: Int!
+    name: String!
+    domain: String
+    subdomain: String
+    settings: JSON
+    status: ConfigStatus
+    maintenance: CreateMaintenanceInput
     updatedAt: Date
   }
 `;
