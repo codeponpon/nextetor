@@ -8,6 +8,8 @@ import moment from "moment";
 import { Website } from "@/generated/client";
 import DropOption from "@/components/DropOption";
 import styles from "./style.module.less";
+import router from "next/router";
+import Link from "next/link";
 
 export interface IWebsiteListProps {
   dataSource: Website[];
@@ -34,7 +36,7 @@ const List: React.FC<IWebsiteListProps> = ({
         },
       });
     } else {
-      console.log("View Website");
+      router.push(`/admin/website/${record.id}`);
     }
   };
 
@@ -51,6 +53,13 @@ const List: React.FC<IWebsiteListProps> = ({
       title: `Website Name`,
       dataIndex: "name",
       width: "10%",
+      render: (text: string, record: Website) => {
+        return (
+          <Link href="website/[id]" as={`website/${record.id}`}>
+            <a>{text}</a>
+          </Link>
+        );
+      },
     },
     {
       title: `Author`,

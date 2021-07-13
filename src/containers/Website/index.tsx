@@ -4,6 +4,7 @@ import {
   CreateWebsiteDocument,
   DeleteWebsiteDocument,
   UpdateWebsiteDocument,
+  Website,
   WebsitesDocument,
 } from "@/generated/client";
 import { ActionType } from "@/redux/actions/types";
@@ -25,7 +26,15 @@ const EnumPostStatus = {
   PUBLISHED: "ACTIVATED",
 };
 
-export const WebsitePage = () => {
+export interface IWebsites {
+  websites: Website[];
+  loading?: boolean;
+}
+
+export const WebsitePage: React.FC<IWebsites> = ({
+  websites,
+  loading: fetching = false,
+}) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -37,17 +46,16 @@ export const WebsitePage = () => {
   const [modalType, setModalType] = useState("");
   const [currentItem, setCurrentItem] = useState({ userId: 0, name: "" });
   const [loading, setLoading] = useState(false);
-  const [getWebsites, { data, loading: getWebsiteLoading }] =
-    useLazyQuery(WebsitesDocument);
+
   const {
-    data: websiteList,
+    data,
     loading: websiteLoading,
     refetch,
   } = useQuery(WebsitesDocument, {
     variables: { status: router.query.status },
   });
 
-  const websites = data?.websites ? data?.websites : websiteList?.websites;
+  websites = data?.websites || websites;
 
   const handleTabClick = (
     key: String,
@@ -63,8 +71,8 @@ export const WebsitePage = () => {
       }),
     });
 
-    getWebsites({ variables: { status: key } });
-    if (!getWebsiteLoading) setLoading(false);
+    refetch();
+    if (!websiteLoading) setLoading(false);
   };
 
   const handleCreateWebsite = () => {
@@ -76,7 +84,7 @@ export const WebsitePage = () => {
 
   const listProps: IWebsiteListProps = {
     dataSource: websites,
-    loading: loading || websiteLoading || getWebsiteLoading,
+    loading: loading || websiteLoading || fetching,
     onEditItem: (item, action = "update") => {
       setCurrentItem(item);
       setModalVisible(true);
@@ -101,7 +109,7 @@ export const WebsitePage = () => {
     visible: modalVisible || false,
     destroyOnClose: true,
     maskClosable: false,
-    confirmLoading: loading || websiteLoading || getWebsiteLoading,
+    confirmLoading: loading || websiteLoading || fetching,
     title: `${
       modalType === "create"
         ? `Create Website`

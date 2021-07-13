@@ -1,5 +1,5 @@
-query Websites($status: ConfigStatus, $name: String) {
-  websites(status: $status, name: $name) {
+query Websites($id: Int, $status: ConfigStatus, $name: String) {
+  websites(id: $id, status: $status, name: $name) {
     id
     user {
       id

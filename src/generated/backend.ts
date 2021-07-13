@@ -186,6 +186,7 @@ export type QueryUserArgs = {
 
 
 export type QueryWebsitesArgs = {
+  id?: Maybe<Scalars['Int']>;
   status?: Maybe<ConfigStatus>;
   name?: Maybe<Scalars['String']>;
 };

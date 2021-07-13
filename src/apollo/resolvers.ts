@@ -208,11 +208,12 @@ export const resolvers: Resolvers<ApollowContext> = {
     },
     async websites(
       parent,
-      args: { status: ConfigStatus; name: String },
+      args: { id: number; status: ConfigStatus; name: string },
       context
     ) {
       const websites = await context.prisma.website.findMany({
         where: {
+          id: args.id,
           name: { contains: args.name },
           status: args.status,
         },
@@ -226,7 +227,7 @@ export const resolvers: Resolvers<ApollowContext> = {
     },
     async website(parent, args, context) {
       const website = await getWebsiteById(args.id, context.db, context.prisma);
-      if (!website) throw new UserInputError("Could not found the website!");
+      if (!website) return null;
       return { ...website, status: website.status as ConfigStatus };
     },
   },
@@ -330,7 +331,13 @@ export const resolvers: Resolvers<ApollowContext> = {
     },
     async createWebsite(parent, args, context) {
       const website = await context.prisma.website.create({
-        data: { ...args.input },
+        data: {
+          userId: args.input.userId,
+          name: args.input.name,
+          domain: args.input.domain,
+          subdomain: args.input.subdomain,
+          status: args.input.status as ConfigStatus,
+        },
       });
       return {
         ...website,
@@ -360,7 +367,7 @@ export const resolvers: Resolvers<ApollowContext> = {
             status: websiteData.status as ConfigStatus,
           };
         }
-        console.log("Update DATA", updateWebsiteData);
+
         const website = await context.prisma.website.update({
           where: { id: Number(id) },
           include: { user: true, maintenance: true },

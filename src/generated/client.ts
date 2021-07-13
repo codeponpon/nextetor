@@ -187,6 +187,7 @@ export type QueryUserArgs = {
 
 
 export type QueryWebsitesArgs = {
+  id?: Maybe<Scalars['Int']>;
   status?: Maybe<ConfigStatus>;
   name?: Maybe<Scalars['String']>;
 };
@@ -509,6 +510,7 @@ export type WebsiteQuery = (
 );
 
 export type WebsitesQueryVariables = Exact<{
+  id?: Maybe<Scalars['Int']>;
   status?: Maybe<ConfigStatus>;
   name?: Maybe<Scalars['String']>;
 }>;
@@ -1161,8 +1163,8 @@ export type WebsiteQueryHookResult = ReturnType<typeof useWebsiteQuery>;
 export type WebsiteLazyQueryHookResult = ReturnType<typeof useWebsiteLazyQuery>;
 export type WebsiteQueryResult = Apollo.QueryResult<WebsiteQuery, WebsiteQueryVariables>;
 export const WebsitesDocument = gql`
-    query Websites($status: ConfigStatus, $name: String) {
-  websites(status: $status, name: $name) {
+    query Websites($id: Int, $status: ConfigStatus, $name: String) {
+  websites(id: $id, status: $status, name: $name) {
     id
     user {
       id
@@ -1202,6 +1204,7 @@ export const WebsitesDocument = gql`
  * @example
  * const { data, loading, error } = useWebsitesQuery({
  *   variables: {
+ *      id: // value for 'id'
  *      status: // value for 'status'
  *      name: // value for 'name'
  *   },
