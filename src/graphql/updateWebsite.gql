@@ -1,0 +1,27 @@
+mutation UpdateWebsite($input: UpdateWebsiteInput!) {
+  updateWebsite(input: $input) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}

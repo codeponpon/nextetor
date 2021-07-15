@@ -19,6 +19,9 @@ import Header from "src/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
 import AvatarDropDown from "@/components/AvatarDropDown";
 import Notifications from "@/components/Notifications";
+import router from "next/router";
+import website from "@/pages/admin/website";
+import { capitalize } from "lodash";
 
 export interface IProps {
   children: React.ReactNode;
@@ -39,7 +42,6 @@ const { Content, Sider } = Layout;
 
 const AppLayout: React.FC<IProps> = ({
   children,
-  style,
   title,
   alwaysDarkMode,
 }: IProps) => {
@@ -48,6 +50,7 @@ const AppLayout: React.FC<IProps> = ({
   const [mobiShow, setMobiShow] = useState(false);
   const [broken, setBroken] = useState(false);
   const theme = alwaysDarkMode ? "dark" : "light";
+  const [rootPath, adminPath, currentPath, id] = router.route.split("/");
   const handleToggle = () => {
     if (broken) {
       setMobiShow(!mobiShow);
@@ -168,6 +171,13 @@ const AppLayout: React.FC<IProps> = ({
                 </a>
               </Link>
             </Breadcrumb.Item>
+            {router.query.id && (
+              <Breadcrumb.Item>
+                <Link href="/admin/website">
+                  <a>{capitalize(currentPath)}</a>
+                </Link>
+              </Breadcrumb.Item>
+            )}
             <Breadcrumb.Item>{title}</Breadcrumb.Item>
           </Breadcrumb>
           <Content

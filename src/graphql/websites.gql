@@ -1,0 +1,27 @@
+query Websites($id: Int, $status: ConfigStatus, $name: String) {
+  websites(id: $id, status: $status, name: $name) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}

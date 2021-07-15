@@ -20,9 +20,10 @@ import {
 import dayjs from "dayjs";
 import { useQuery } from "@apollo/client";
 import { startCase, toLower } from "lodash";
-import AuthStorage from "@/utils/auth-storage";
 import moment from "moment";
 import { $enum } from "ts-enum-util";
+import { ActionType } from "@/redux/actions/types";
+import { useDispatch } from "react-redux";
 
 export interface IModalProps {
   action?: string;
@@ -50,7 +51,7 @@ const formItemLayout = {
 };
 
 export const UserModal: React.FC<IModalProps> = (props) => {
-  const currentRole = AuthStorage.role;
+  const dispatch = useDispatch();
   const { item, onOk, action, ...modalProps } = props;
   const { data, loading } = useQuery(RolesDocument);
   const formRef = createRef<FormInstance>();
@@ -68,14 +69,18 @@ export const UserModal: React.FC<IModalProps> = (props) => {
         message.loading({ content: "Loading...", key: "updatable" });
         setTimeout(() => {
           message.success({
-            content: "Loaded!",
+            content: "Done!",
             key: "updatable",
             duration: 2,
           });
         }, 1000);
       })
-      .catch((errorInfo: any) => {
-        console.log("ERROR Info: ", errorInfo);
+      .catch((error) => {
+        dispatch({
+          type: ActionType.REQUEST_ERROR,
+          payload: error,
+        });
+        console.log("ERROR Info: ", error);
       });
   };
 

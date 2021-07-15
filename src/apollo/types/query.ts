@@ -13,5 +13,7 @@ export default gql`
     ): [User!]!
     user(id: Int!): User
     roles: [Role!]!
+    websites(id: Int, status: ConfigStatus, name: String): [Website!]
+    website(id: Int!): Website
   }
 `;

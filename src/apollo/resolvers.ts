@@ -2,9 +2,10 @@ import {
   CreatedBy,
   CreateUserInput,
   Resolvers,
-  Role,
   RoleType,
   UserStatus,
+  ConfigStatus,
+  ConfigType,
 } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
 // import { OkPacket } from "mysql";
@@ -12,7 +13,7 @@ import { UserInputError } from "apollo-server-errors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import dayjs from "dayjs";
+import GraphQLJSON from "graphql-type-json";
 
 interface ApollowContext {
   db: ServerlessMysql;
@@ -180,7 +181,19 @@ const createUserByParams = async (
   };
 };
 
+const getWebsiteById = async (
+  id: number,
+  db: ServerlessMysql,
+  prisma: PrismaClient
+) => {
+  return await prisma.website.findUnique({
+    where: { id: id },
+    include: { user: true, maintenance: true },
+  });
+};
+
 export const resolvers: Resolvers<ApollowContext> = {
+  JSON: GraphQLJSON,
   Query: {
     async users(parent, args, context) {
       const users = await findUsers(context.prisma, args);
@@ -193,10 +206,33 @@ export const resolvers: Resolvers<ApollowContext> = {
       const roles = await context.prisma.role.findMany();
       return roles.map((role) => ({ ...role, type: role.type as RoleType }));
     },
+    async websites(
+      parent,
+      args: { id: number; status: ConfigStatus; name: string },
+      context
+    ) {
+      const websites = await context.prisma.website.findMany({
+        where: {
+          id: args.id,
+          name: { contains: args.name },
+          status: args.status,
+        },
+        include: { user: true, maintenance: true },
+      });
+
+      return websites.map((website) => ({
+        ...website,
+        status: website.status as ConfigStatus,
+      }));
+    },
+    async website(parent, args, context) {
+      const website = await getWebsiteById(args.id, context.db, context.prisma);
+      if (!website) return null;
+      return { ...website, status: website.status as ConfigStatus };
+    },
   },
   Mutation: {
     async createUser(parent, args, context) {
-      console.log("Create User Params", args.input);
       return await createUserByParams(context.db, context.prisma, args.input);
     },
     async updateUser(parent, args, context) {
@@ -233,8 +269,6 @@ export const resolvers: Resolvers<ApollowContext> = {
       const deleteUser = await context.prisma.user.delete({
         where: { id: args.id },
       });
-
-      console.log("Delete User and Profile ", deleteUser);
 
       return {
         id: user.id,
@@ -293,6 +327,69 @@ export const resolvers: Resolvers<ApollowContext> = {
           type: user?.role?.type as RoleType,
           createdAt: user.role?.createdAt.toString(),
         },
+      };
+    },
+    async createWebsite(parent, args, context) {
+      const website = await context.prisma.website.create({
+        data: {
+          userId: args.input.userId,
+          name: args.input.name,
+          domain: args.input.domain,
+          subdomain: args.input.subdomain,
+          status: args.input.status as ConfigStatus,
+        },
+      });
+      return {
+        ...website,
+        status: website.status as ConfigStatus,
+      };
+    },
+    async updateWebsite(parent, args, context) {
+      try {
+        const { id, maintenance, ...websiteData } = args.input;
+        let updateWebsiteData;
+
+        if (maintenance) {
+          updateWebsiteData = {
+            ...websiteData,
+            status: websiteData.status as ConfigStatus,
+            maintenance: {
+              update: {
+                ...maintenance,
+                configType: maintenance.configType as ConfigType,
+                configStatus: maintenance.configStatus as ConfigStatus,
+              },
+            },
+          };
+        } else {
+          updateWebsiteData = {
+            ...websiteData,
+            status: websiteData.status as ConfigStatus,
+          };
+        }
+
+        const website = await context.prisma.website.update({
+          where: { id: Number(id) },
+          include: { user: true, maintenance: true },
+          data: updateWebsiteData,
+        });
+
+        return website;
+      } catch (error) {
+        throw new UserInputError("Could not update the user!");
+      }
+    },
+    async deleteWebsite(parent, args, context) {
+      const website = await getWebsiteById(args.id, context.db, context.prisma);
+      if (!website) throw new UserInputError("Could not found the website!");
+
+      await context.prisma.website.delete({
+        where: { id: args.id },
+      });
+
+      return {
+        ...website,
+        status: website.status as ConfigStatus,
       };
     },
   },

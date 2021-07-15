@@ -19,6 +19,6 @@
     },
     "allowSyntheticDefaultImports": true,
   },
-  "include": ["src", "typings", "global.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["src", "typings", "custom.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

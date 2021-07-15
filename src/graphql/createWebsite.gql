@@ -1,0 +1,27 @@
+mutation CreateWebsite($input: CreateWebsiteInput!) {
+  createWebsite(input: $input) {
+    id
+    user {
+      id
+      username
+    }
+    userId
+    name
+    domain
+    subdomain
+    settings
+    status
+    maintenance {
+      id
+      configType
+      configStatus
+      startDate
+      endDate
+      message
+      createdAt
+      updatedAt
+    }
+    createdAt
+    updatedAt
+  }
+}

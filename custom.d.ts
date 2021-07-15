@@ -18,3 +18,8 @@ declare module "*.graphql" {
 
   export = Schema;
 }
+
+declare module "*.scss" {
+  const content: any;
+  export = content;
+}

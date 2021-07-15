@@ -1,6 +1,5 @@
 import React from "react";
 
-import Link from "next/link";
 import { Table, Modal, Avatar } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import { MenuInfo } from "rc-menu/lib/interface";
@@ -14,11 +13,6 @@ export interface IUserProps {
   list: User[];
   onDeleteItem: (id: any) => void;
   onEditItem: (u: User, a?: string) => void;
-  // loading: boolean;
-  // rowSelection: object;
-  // onChange?: (pagination: any, filters: any, sorter: any) => void;
-  // location?: object;
-  // pagination?: TablePaginationConfig;
 }
 
 const { confirm } = Modal;
