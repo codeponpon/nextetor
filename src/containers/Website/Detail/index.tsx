@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { ConfigProvider, Button, Drawer } from "antd";
 import Icon from "@ant-design/icons";
 import Head from "@/components/Head";
+import { Template } from "@/Template";
 import { IWebsites } from "..";
 
 export const WebsiteDetail: React.FC<IWebsites> = ({ websites }) => {
@@ -64,6 +65,7 @@ export const WebsiteDetail: React.FC<IWebsites> = ({ websites }) => {
           </Drawer>
         </div>
       </ConfigProvider>
+      <Template />
     </>
   );
 };
