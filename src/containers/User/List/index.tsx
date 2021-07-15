@@ -1,6 +1,5 @@
 import React from "react";
 
-import Link from "next/link";
 import { Table, Modal, Avatar } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import { MenuInfo } from "rc-menu/lib/interface";
