@@ -6,10 +6,10 @@ import classes from "./style.module.less";
 
 interface IProps {
   children: React.ReactNode;
-  style: {};
+  style: any;
 }
 
-const Header: React.FC<IProps> = ({ children, style }: IProps) => {
+const Header: React.FC<IProps> = ({ children, style }) => {
   return (
     <div className={classes.headerWrapper}>
       <Layout.Header className={classes.header} style={style}>

@@ -6,6 +6,7 @@ import {
   UserStatus,
   ConfigStatus,
   ConfigType,
+  Website,
 } from "@/generated/backend";
 import { ServerlessMysql } from "serverless-mysql";
 // import { OkPacket } from "mysql";
@@ -14,6 +15,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import GraphQLJSON from "graphql-type-json";
+import dayjs from "dayjs";
 
 interface ApollowContext {
   db: ServerlessMysql;
@@ -155,6 +157,7 @@ const createUserByParams = async (
       profile: {
         create: {
           ...profile,
+          mobile: profile?.mobile || "",
         },
       },
       roleId: params.roleId,
@@ -206,46 +209,71 @@ export const resolvers: Resolvers<ApollowContext> = {
       const roles = await context.prisma.role.findMany();
       return roles.map((role) => ({ ...role, type: role.type as RoleType }));
     },
-    async websites(
-      parent,
-      args: { id: number; status: ConfigStatus; name: string },
-      context
-    ) {
+    async websites(parent, args: any, context) {
+      let whereClause = { ...args };
+
       const websites = await context.prisma.website.findMany({
-        where: {
-          id: args.id,
-          name: { contains: args.name },
-          status: args.status,
-        },
+        where: whereClause,
         include: { user: true, maintenance: true },
       });
 
       return websites.map((website) => ({
         ...website,
+        id: Number(website!.id),
         status: website.status as ConfigStatus,
+        maintenance: {
+          ...website.maintenance,
+          id: Number(website.maintenance!.id),
+          websiteId: Number(website.id),
+          configStatus: website.maintenance?.configStatus as ConfigStatus,
+          configType: website.maintenance?.configType as ConfigType,
+        },
+        user: {
+          ...website.user,
+          id: Number(website.user.id),
+          createdBy: website.user.createdBy as CreatedBy,
+          status: website.user.status as UserStatus,
+        },
       }));
     },
-    async website(parent, args, context) {
+    async website(parent, args, context): Promise<Website | null> {
       const website = await getWebsiteById(args.id, context.db, context.prisma);
       if (!website) return null;
-      return { ...website, status: website.status as ConfigStatus };
+      return {
+        ...website,
+        status: website.status as ConfigStatus,
+        maintenance: {
+          ...website.maintenance,
+          id: Number(website.maintenance!.id),
+          websiteId: Number(website.id),
+          configStatus: website.maintenance?.configStatus as ConfigStatus,
+          configType: website.maintenance?.configType as ConfigType,
+        },
+        user: {
+          ...website.user,
+          id: Number(website.user.id),
+          createdBy: website.user.createdBy as CreatedBy,
+          status: website.user.status as UserStatus,
+        },
+      };
     },
   },
   Mutation: {
     async createUser(parent, args, context) {
       return await createUserByParams(context.db, context.prisma, args.input);
     },
-    async updateUser(parent, args, context) {
+    async updateUser(parent, args: any, context) {
       try {
         const { profile, ...userData } = args.input;
         const updatedUser = await context.prisma.user.update({
-          where: { id: Number(args.input.id) },
+          where: { id: args.input.id },
           include: { profile: true },
           data: {
             ...userData,
             profile: {
               update: {
                 ...profile,
+                mobile: profile?.mobile || "",
               },
             },
           },
@@ -255,6 +283,14 @@ export const resolvers: Resolvers<ApollowContext> = {
           ...updatedUser,
           createdBy: updatedUser.createdBy as CreatedBy,
           status: updatedUser.status as UserStatus,
+          profile: {
+            ...updatedUser.profile,
+            id: Number(updatedUser.profile?.id),
+            birthday: updatedUser.profile?.birthday
+              ? dayjs(updatedUser.profile.birthday).format()
+              : "",
+            createdAt: updatedUser.profile?.createdAt,
+          },
         };
       } catch (error) {
         throw new UserInputError("Could not update the user!");
@@ -374,7 +410,21 @@ export const resolvers: Resolvers<ApollowContext> = {
           data: updateWebsiteData,
         });
 
-        return website;
+        return {
+          ...website,
+          status: website.status as ConfigStatus,
+          user: {
+            id: website.user.id,
+            createdBy: website.user.createdBy as CreatedBy,
+          },
+          maintenance: {
+            ...website.maintenance,
+            id: Number(website.maintenance?.id),
+            websiteId: Number(website.maintenance?.websiteId),
+            configType: website.maintenance?.configType as ConfigType,
+            configStatus: website.maintenance?.configStatus as ConfigStatus,
+          },
+        };
       } catch (error) {
         throw new UserInputError("Could not update the user!");
       }
@@ -390,6 +440,17 @@ export const resolvers: Resolvers<ApollowContext> = {
       return {
         ...website,
         status: website.status as ConfigStatus,
+        user: {
+          id: website.user.id,
+          createdBy: website.user.createdBy as CreatedBy,
+        },
+        maintenance: {
+          ...website.maintenance,
+          id: Number(website.maintenance?.id),
+          websiteId: Number(website.maintenance?.websiteId),
+          configType: website.maintenance?.configType as ConfigType,
+          configStatus: website.maintenance?.configStatus as ConfigStatus,
+        },
       };
     },
   },

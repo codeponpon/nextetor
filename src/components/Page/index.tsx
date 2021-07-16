@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import classnames from "classnames";
 import Loader from "@/components/Loader";
 import styles from "./style.module.less";

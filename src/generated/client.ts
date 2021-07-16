@@ -232,6 +232,16 @@ export type UpdateProfileInput = {
   updatedAt: Scalars['Date'];
 };
 
+export type UpdateProfileUserInput = {
+  mobile?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  birthday?: Maybe<Scalars['String']>;
+  lineID?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['Date'];
+};
+
 export type UpdateUserInput = {
   id: Scalars['Int'];
   username?: Maybe<Scalars['String']>;
@@ -240,7 +250,7 @@ export type UpdateUserInput = {
   status?: Maybe<UserStatus>;
   token?: Maybe<Scalars['String']>;
   roleId?: Maybe<Scalars['Int']>;
-  profile?: Maybe<UpdateProfileInput>;
+  profile?: Maybe<UpdateProfileUserInput>;
   updatedAt: Scalars['Date'];
 };
 

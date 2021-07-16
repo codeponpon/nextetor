@@ -1,6 +1,5 @@
 import React from "react";
 import { Avatar } from "antd";
-import { AvatarSize } from "antd/lib/avatar/SizeContext";
 
 interface IProps {
   src: string;
@@ -8,7 +7,7 @@ interface IProps {
   className?: string;
   style?: any;
   vip?: boolean;
-  size: AvatarSize | any;
+  size: any;
 }
 
 const AvatarCpn: React.FC<IProps> = (props: IProps) => {

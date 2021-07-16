@@ -5,9 +5,9 @@ import Head from "@/components/Head";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Page from "@/components/Page";
 
-const UserDetail = ({
-      initialApolloState,
-    }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+type TSetting = InferGetServerSidePropsType<typeof getServerSideProps>;
+
+const UserDetail = (props: TSetting) => {
   return (
     <AppLayout alwaysDarkMode title="Setting">
       <Head title="Setting" />

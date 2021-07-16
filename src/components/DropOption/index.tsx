@@ -1,16 +1,15 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { BarsOutlined, DownOutlined } from "@ant-design/icons";
 import { Dropdown, Button, Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
-import { User } from "@/generated/client";
 import { AbilityContext } from "@/components/Can";
 
 interface iProps {
   record: any;
   onMenuClick: (e: MenuInfo) => void;
   menuOptions: { key: any; name: string }[];
-  buttonStyle?: object;
-  dropdownProps?: object;
+  buttonStyle?: any;
+  dropdownProps?: any;
 }
 
 const DropOption: React.FC<iProps> = ({

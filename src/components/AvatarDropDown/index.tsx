@@ -30,7 +30,6 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
     Modal.confirm({
       title: "Are you sure?",
       icon: <ExclamationCircleOutlined />,
-      // content: 'Are you sure?',
       onOk: async () => {
         await dispatch(
           await actionLogout(() => {

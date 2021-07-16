@@ -37,7 +37,6 @@ const middleware =
   ({ dispatch }: any) =>
   (next: any) =>
   (action: any) => {
-    console.log("Action ", action);
     switch (action.type) {
       case ActionType.INTERNAL_REQUEST:
         return internalProcess(action.payload, dispatch);

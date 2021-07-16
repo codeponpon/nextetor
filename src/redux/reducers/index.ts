@@ -25,7 +25,6 @@ const reducers = (
   state: InitState = initialState,
   action: AnyAction
 ): InitState => {
-  console.log("Reducer ", action);
   const { type, payload } = action;
   if (type === HYDRATE) {
     const nextState = {

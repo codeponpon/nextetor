@@ -51,7 +51,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
       router.events.off("routeChangeComplete", () => NProgress.done());
       router.events.off("routeChangeError", () => NProgress.done());
     };
-  }, []);
+  }, [router.events]);
 
   useAsync(async () => {
     if (AuthStorage.loggedIn && AuthStorage.user) {

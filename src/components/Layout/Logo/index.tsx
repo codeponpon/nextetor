@@ -6,7 +6,7 @@ interface Props {
   height: number;
 }
 
-const Logo = ({ width, height }: Props) => {
+const Logo: React.FC<Props> = ({ width, height }) => {
   if (!width || !height) {
     height = width = 200;
   }

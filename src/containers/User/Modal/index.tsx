@@ -107,11 +107,11 @@ export const UserModal: React.FC<IModalProps> = (props) => {
             <Input type="hidden" value={dayjs().format()} />
           </FormItem>
         )}
-        {action === "update" && (
+        {/* {action === "update" && (
           <FormItem name={["profile", "id"]} style={{ display: "none" }}>
             <Input type="hidden" />
           </FormItem>
-        )}
+        )} */}
         <FormItem name="createdBy" style={{ display: "none" }}>
           <Input type="hidden" />
         </FormItem>

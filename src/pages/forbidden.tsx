@@ -1,9 +1,6 @@
 import React from "react";
-// import PropTypes from 'prop-types';
 
 import Head from "next/head";
-import Link from "next/link";
-import { Button } from "antd";
 
 const ForbiddenPage: React.FC = (props) => {
   return (
@@ -65,10 +62,4 @@ const ForbiddenPage: React.FC = (props) => {
   );
 };
 
-// ForbiddenPage.getInitialProps = ({ store, isServer, pathname, query }) => {
-// 	// store.dispatch({ type: 'FOO', payload: 'foo' }); // The component can read from the store's state when rendered
-// 	return { custom: 'custom' }; // You can pass some custom props to the component from here
-// };
-
 export default ForbiddenPage;
-// export default connect((state) => state)(ForbiddenPage);

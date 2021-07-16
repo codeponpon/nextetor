@@ -3,16 +3,14 @@ import React from "react";
 import { AuthProvider } from "@/containers/Game/Auth";
 import Head from "@/components/Head";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useRouter } from "next/router";
 import { GameContent } from "@/containers/Game/Content";
 import GameLayout from "@/containers/Game/Layout";
 import styles from "@/containers/Game/styles/index.module.less";
 
-const GamePage = ({
-  game,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter();
-  let title = "Websites";
+const GamePage = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  const title = "Websites";
 
   return (
     <AuthProvider authenticated={false}>

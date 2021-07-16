@@ -1,13 +1,14 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   extends: [
-    'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint',
-    'react-app',
-    'plugin:prettier/recommended',
+    "plugin:@typescript-eslint/recommended",
+    "eslint-config-prettier",
+    "react-app",
+    "plugin:prettier/recommended",
   ],
-  plugins: ['@typescript-eslint', 'react'],
+  plugins: ["@typescript-eslint", "react"],
   rules: {
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "jsx-a11y/anchor-is-valid": "off",
   },
-}
+};

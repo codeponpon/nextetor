@@ -5,7 +5,7 @@ import { NotificationOutlined } from "@ant-design/icons";
 
 import classes from "./style.module.less";
 
-const Notifications = () => {
+const Notifications: React.FC = () => {
   const menu = (
     <div className={classes.menuDropdown}>
       <Spin spinning={false}>

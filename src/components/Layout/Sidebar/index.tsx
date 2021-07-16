@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { useRouter } from "next/router";
 
@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { ConfigStatus } from "@/generated/client";
 
-const Sidebar = ({ theme }: { theme: MenuTheme }) => {
+const Sidebar: React.FC<{ theme: MenuTheme }> = ({ theme }) => {
   const router = useRouter();
 
   // eslint-disable-next-line no-unused-vars

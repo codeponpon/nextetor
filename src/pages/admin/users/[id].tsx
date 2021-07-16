@@ -10,9 +10,6 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 const UserDetail = ({
   initialApolloState: { user, profile, role },
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const router = useRouter();
-  const { id } = router.query as { id: string };
-
   return (
     <AppLayout alwaysDarkMode title="User Informations">
       <Head title="Users" />
@@ -22,7 +19,7 @@ const UserDetail = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const id = Number(context.params!.id);
+  const { id } = context.params!;
   const apolloClient = initializeApollo();
 
   await apolloClient.query<UserQuery>({

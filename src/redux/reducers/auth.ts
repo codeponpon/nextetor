@@ -17,9 +17,6 @@ const reducer = (
   state: AuthState = initialState,
   { type, payload }: AnyAction
 ) => {
-  console.log("---- Reducer ----");
-  console.log("TYPE: ", type);
-
   switch (type) {
     case ActionType.LOGIN_FAILED:
     case ActionType.LOGIN_SUCCESS:

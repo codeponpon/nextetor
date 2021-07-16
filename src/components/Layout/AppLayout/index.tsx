@@ -20,7 +20,6 @@ import Footer from "@/components/Layout/Footer";
 import AvatarDropDown from "@/components/AvatarDropDown";
 import Notifications from "@/components/Notifications";
 import router from "next/router";
-import website from "@/pages/admin/website";
 import { capitalize } from "lodash";
 
 export interface IProps {

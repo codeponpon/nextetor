@@ -20,7 +20,7 @@ export default gql`
     status: UserStatus
     token: String
     roleId: Int
-    profile: UpdateProfileInput
+    profile: UpdateProfileUserInput
     updatedAt: Date!
   }
 
@@ -36,6 +36,16 @@ export default gql`
     birthday: String
     lineID: String
     email: String
+  }
+
+  input UpdateProfileUserInput {
+    mobile: String
+    firstName: String
+    lastName: String
+    birthday: String
+    lineID: String
+    email: String
+    updatedAt: Date!
   }
 
   input UpdateProfileInput {

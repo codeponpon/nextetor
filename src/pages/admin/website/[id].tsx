@@ -14,7 +14,7 @@ type WebsiteProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
 const Websites = ({ websites, fetching }: WebsiteProps) => {
   const router = useRouter();
-  let title = router.query.id ? websites[0].name : "Websites";
+  const title = router.query.id ? websites[0].name : "Websites";
   const renderPage = router.query.id ? (
     <WebsiteDetail loading={fetching} websites={websites} />
   ) : (
