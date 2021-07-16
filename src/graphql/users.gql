@@ -1,0 +1,31 @@
+query Users($status: UserStatus, $createdBy: CreatedBy, $offset: Int, $limit: Int, $query: String, $begin: Date, $end: Date) {
+  users(status: $status, createdBy: $createdBy, offset: $offset, limit: $limit, query: $query, begin: $begin, end: $end) {
+    id
+    roleId
+    username
+    password
+    status
+    createdBy
+    createdAt
+    updatedAt
+    profile {
+      id
+      mobile
+      firstName
+      lastName
+      birthday
+      lineID
+      email
+      createdAt
+      updatedAt
+    }
+    role {
+      id
+      name
+      type
+      thirdPartyInfo
+      createdAt
+      updatedAt
+    }
+  }
+}

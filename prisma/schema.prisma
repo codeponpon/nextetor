@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+// START ENUM
+enum userStatus {
+  ACTIVE
+  INACTIVE
+  BAN
+}
+
+enum createdBy {
+  WEBSITE
+  ADMIN
+}
+
+enum RoleType {
+  SUPER_ADMIN
+  ADMIN
+  AGENT
+  MEMBER
+  CALL_CENTER
+}
+
+enum ConfigType {
+  CLOSE_WEBSITE
+  CLOSE_LOGIN
+  CLOSE_REGISTER
+  CLOSE_WITHDRAW
+  CLOSE_DEPOSIT
+  CLOSE_LAUNCHGAME
+  MESSAGE
+}
+
+enum ConfigStatus {
+  ACTIVATED
+  DEACTIVATED
+}
+
+// END ENUM
+
+// START MODEL
+model User {
+  id        Int        @id @default(autoincrement())
+  profile   Profile?
+  role      Role       @relation(fields: [roleId], references: [id])
+  roleId    Int
+  website   Website[]
+  username  String     @unique
+  password  String
+  createdBy createdBy? @default(WEBSITE)
+  status    userStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+
+  @@index([username])
+}
+
+model Profile {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  mobile    String    @unique
+  firstName String?
+  lastName  String?
+  birthday  DateTime?
+  lineID    String?
+  email     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([mobile])
+}
+
+model Role {
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
+  users          User[]
+  type           RoleType  @default(MEMBER)
+  thirdPartyInfo String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+}
+
+// Website config
+model Website {
+  id          Int           @id @default(autoincrement())
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  maintenance Maintenance?
+  name        String
+  domain      String?       @unique
+  subdomain   String?
+  settings    Json?
+  status      ConfigStatus? @default(DEACTIVATED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime?     @updatedAt
+}
+
+model Maintenance {
+  id           Int          @id @default(autoincrement())
+  website      Website      @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteId    Int
+  configType   ConfigType
+  configStatus ConfigStatus
+  startDate    DateTime?
+  endDate      DateTime?
+  message      String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?    @updatedAt
+}

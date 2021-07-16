@@ -1,0 +1,22 @@
+[
+  {
+    "name": "super_admin",
+    "type": "SUPER_ADMIN"
+  },
+  {
+    "name": "admin",
+    "type": "ADMIN"
+  },
+  {
+    "name": "agent",
+    "type": "AGENT"
+  },
+  {
+    "name": "member",
+    "type": "MEMBER"
+  },
+  {
+    "name": "call_center",
+    "type": "CALL_CENTER"
+  }
+]
