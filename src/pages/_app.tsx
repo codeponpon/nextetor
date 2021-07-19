@@ -22,6 +22,7 @@ const urlsIgnore = [
   "/login",
   "/reset-password",
   "/forbidden",
+  "/game/[id]",
 ];
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
@@ -75,7 +76,6 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     } else {
       AuthStorage.destroy();
       dispatch({ type: "LOGOUT_SUCCESS" });
-      if (router.pathname !== "/login") router.push("/login");
       setTimeout(() => setAwaitLoading(false), 600);
     }
   }, [AuthStorage.loggedIn]);
