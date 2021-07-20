@@ -1,8 +1,9 @@
-const cli = require('next/dist/cli/next-dev');
-const loadEnvConfig = require('./env');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const cli = require("next/dist/cli/next-dev");
+const loadEnvConfig = require("./env");
 
 loadEnvConfig({
-	dev: true,
+  dev: true,
 });
 
 cli.nextDev();
