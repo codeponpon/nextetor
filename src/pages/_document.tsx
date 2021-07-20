@@ -1,10 +1,10 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 
-import Meta from "src/components/Head/Meta";
-import METADATA from "src/constants/metadata";
+import Meta from "@/components/Head/Meta";
+import METADATA from "@/constants/metadata";
 
 export default class MyDocument extends Document {
-  static async getInitialProps(ctx) {
+  static async getInitialProps(ctx: any) {
     const initialProps = await Document.getInitialProps(ctx);
     return { ...initialProps };
   }
@@ -15,7 +15,10 @@ export default class MyDocument extends Document {
         <Head>
           <meta charSet="utf-8" />
           {/* PWA */}
-          <link rel="manifest" href="/manifest.json" />
+          <link
+            rel="manifest"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/manifest.json`}
+          />
 
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -39,34 +42,37 @@ export default class MyDocument extends Document {
             rel="shortcut icon"
             type="image/x-icon"
             sizes="512x512"
-            href="/favicon.ico"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/favicon.ico`}
           />
-          <link rel="shortcut icon" href="/favicon.ico" />
+          <link
+            rel="shortcut icon"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/favicon.ico`}
+          />
 
           <link
             rel="icon"
             type="image/png"
             sizes="512x512"
-            href="/icons/512x512.png"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/icons/512x512.png`}
           />
           <link
             rel="apple-touch-icon"
             type="image/png"
             sizes="512x512"
-            href="/icons/512x512.png"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/icons/512x512.png`}
           />
 
           <link
             rel="icon"
             type="image/png"
             sizes="192x192"
-            href="/icons/192x192.png"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/icons/192x192.png`}
           />
           <link
             rel="apple-touch-icon"
             type="image/png"
             sizes="192x192"
-            href="/icons/192x192.png"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH}/icons/192x192.png`}
           />
 
           {/* END PWA */}

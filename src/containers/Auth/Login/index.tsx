@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 
@@ -7,9 +7,9 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "@/components/Layout/Logo";
 import classes from "./style.module.less";
 import AuthStorage from "@/utils/auth-storage";
-import router from "next/router";
 import { ActionType, ILogin } from "@/redux/actions/types";
 import { gql, useMutation } from "@apollo/client";
+import { useRouter } from "next/router";
 
 const SIGN_IN = gql`
   mutation SingIn($input: SignInInput!) {
@@ -31,6 +31,7 @@ const SIGN_IN = gql`
 const Login: React.FC = () => {
   const dispatch = useDispatch();
   const [signIn, { loading }] = useMutation(SIGN_IN);
+  const router = useRouter();
 
   useEffect(() => {
     if (AuthStorage.loggedIn) {
