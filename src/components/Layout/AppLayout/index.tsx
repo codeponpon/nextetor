@@ -101,7 +101,7 @@ const AppLayout: React.FC<IProps> = ({
             <a>
               <div className={classes.logo}>
                 <Image
-                  src="/images/logo.png"
+                  src={`${router.basePath}/images/logo.png`}
                   alt="Logo"
                   width={35}
                   height={35}
@@ -141,7 +141,7 @@ const AppLayout: React.FC<IProps> = ({
                 <a>
                   <div className={classes.logoCenter}>
                     <Image
-                      src="/images/logo.png"
+                      src={`${router.basePath}/images/logo.png`}
                       alt="Logo"
                       width={35}
                       height={35}
