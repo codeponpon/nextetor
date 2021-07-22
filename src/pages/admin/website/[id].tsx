@@ -15,7 +15,7 @@ type WebsiteProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 const Websites = ({ websites, fetching }: WebsiteProps) => {
   const router = useRouter();
   const title = router.query.id ? websites[0].name : "Websites";
-  const renderPage = router.query.id ? (
+  const renderPage = router.query?.id ? (
     <WebsiteDetail loading={fetching} websites={websites} />
   ) : (
     <WebsitePage loading={fetching} websites={websites} />
@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   if (params?.id) {
     const { data, loading } = await apolloClient.query<WebsitesQuery>({
       query: WebsitesDocument,
-      variables: { id: Number(params?.id) },
+      variables: { id: Number(params.id) },
     });
     websites = websites = JSON.parse(JSON.stringify(data?.websites));
     fetching = loading;

@@ -11,13 +11,15 @@ import { Form, Input, Button } from "antd";
 import { PhoneOutlined, FieldNumberOutlined } from "@ant-design/icons";
 
 import classes from "./style.module.less";
+import { useRouter } from "next/router";
 
 const ForgotPassword = () => {
+  const router = useRouter();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [validOTP, setValidOTP] = useState(false);
-
+  console.log(router.basePath);
   useAsync(async () => {
     if (AuthStorage.loggedIn) {
       // Logout
@@ -67,10 +69,10 @@ const ForgotPassword = () => {
               >
                 <div className="text-center mb-5">
                   <Image
-                    src="/images/logo.png"
                     alt="Logo"
                     width={150}
                     height={150}
+                    src={`${router.basePath}/images/logo.png`}
                   />
                 </div>
 
@@ -118,7 +120,7 @@ const ForgotPassword = () => {
                 </Form.Item>
 
                 <div className="text-center">
-                  <Link href="/login">
+                  <Link href="/login" passHref>
                     <Button type="primary" className="mt-3" loading={loading}>
                       Submit
                     </Button>
@@ -157,7 +159,7 @@ const ForgotPassword = () => {
               >
                 <div className="text-center mb-5">
                   <Image
-                    src="/images/logo.png"
+                    src={`${router.basePath}/images/logo.png`}
                     alt="Logo"
                     width={150}
                     height={150}
@@ -228,7 +230,7 @@ const ForgotPassword = () => {
             >
               <div className="text-center mb-5">
                 <Image
-                  src="/images/logo.png"
+                  src={`${router.basePath}/images/logo.png`}
                   alt="Logo"
                   width={150}
                   height={150}

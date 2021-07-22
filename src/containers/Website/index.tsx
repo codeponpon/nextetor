@@ -58,7 +58,7 @@ export const WebsitePage: React.FC<IWebsites> = ({
   websites = data?.websites || websites;
 
   const handleTabClick = (
-    key: String,
+    key: string,
     e: React.KeyboardEvent | React.MouseEvent
   ) => {
     setLoading(true);

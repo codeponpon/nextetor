@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   CreatedBy,
   CreateUserInput,
@@ -24,7 +25,7 @@ interface ApollowContext {
 
 const findUsers = async (prisma: PrismaClient, args: any) => {
   const { status, createdBy, offset, limit, query, begin, end } = args;
-  let where = [];
+  const where = [];
 
   if (begin && end) {
     where.push({
@@ -210,7 +211,7 @@ export const resolvers: Resolvers<ApollowContext> = {
       return roles.map((role) => ({ ...role, type: role.type as RoleType }));
     },
     async websites(parent, args: any, context) {
-      let whereClause = { ...args };
+      const whereClause = { ...args };
 
       const websites = await context.prisma.website.findMany({
         where: whereClause,
@@ -221,14 +222,14 @@ export const resolvers: Resolvers<ApollowContext> = {
         ...website,
         id: Number(website!.id),
         status: website.status as ConfigStatus,
-        maintenance: {
+        maintenance: website.maintenance && {
           ...website.maintenance,
           id: Number(website.maintenance!.id),
           websiteId: Number(website.id),
           configStatus: website.maintenance?.configStatus as ConfigStatus,
           configType: website.maintenance?.configType as ConfigType,
         },
-        user: {
+        user: website.user && {
           ...website.user,
           id: Number(website.user.id),
           createdBy: website.user.createdBy as CreatedBy,
@@ -242,14 +243,14 @@ export const resolvers: Resolvers<ApollowContext> = {
       return {
         ...website,
         status: website.status as ConfigStatus,
-        maintenance: {
+        maintenance: website.maintenance && {
           ...website.maintenance,
           id: Number(website.maintenance!.id),
           websiteId: Number(website.id),
           configStatus: website.maintenance?.configStatus as ConfigStatus,
           configType: website.maintenance?.configType as ConfigType,
         },
-        user: {
+        user: website.user && {
           ...website.user,
           id: Number(website.user.id),
           createdBy: website.user.createdBy as CreatedBy,
