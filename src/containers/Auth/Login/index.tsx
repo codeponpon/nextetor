@@ -23,6 +23,7 @@ const SIGN_IN = gql`
       }
       role {
         name
+        type
       }
     }
   }

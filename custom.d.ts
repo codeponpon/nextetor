@@ -24,6 +24,12 @@ declare namespace NodeJS {
     WITHDRAW_MAX_PER_TIME: number;
     WITHDRAW_MAX_PER_DAY: number;
     USERNAME_PREFIX: string;
+
+    GAME_CLIENT_REPOSITORY_NAME: string;
+    GAME_CLIENT_REPOSITORY_TYPE: string;
+    VERCEL_API_URL: string;
+    VERCEL_EMAIL: string;
+    TOKEN_NAME: string;
   }
 }
 

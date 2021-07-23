@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import AppLayout from "@/components/Layout/AppLayout";
 import Head from "@/components/Head";
@@ -10,9 +10,10 @@ import { useRouter } from "next/router";
 import { WebsitePage } from "@/containers/Website";
 import { WebsiteDetail } from "@/containers/Website/Detail";
 
-type WebsiteProps = InferGetServerSidePropsType<typeof getServerSideProps>;
-
-const Websites = ({ websites, fetching }: WebsiteProps) => {
+const Websites = ({
+  websites,
+  fetching,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter();
   const title = router.query.id ? websites[0].name : "Websites";
   const renderPage = router.query?.id ? (

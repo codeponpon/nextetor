@@ -69,6 +69,14 @@ export default gql`
     updatedAt: Date
   }
 
+  input CreateVercelProjectInput {
+    vercelId: String
+    accountId: String
+    details: JSON
+    createdAt: Date
+    updatedAt: Date
+  }
+
   input CreateWebsiteInput {
     userId: Int!
     name: String!
@@ -77,6 +85,7 @@ export default gql`
     settings: JSON
     status: ConfigStatus
     maintenance: CreateMaintenanceInput
+    vercelProject: CreateVercelProjectInput
     createdAt: Date
     updatedAt: Date
   }
@@ -90,6 +99,7 @@ export default gql`
     settings: JSON
     status: ConfigStatus
     maintenance: CreateMaintenanceInput
+    vercelProject: CreateVercelProjectInput
     updatedAt: Date
   }
 `;

@@ -1,22 +1,22 @@
 import { AbilityBuilder, Ability, AbilityClass } from "@casl/ability";
-import { User } from "@/generated/client";
+import { User, Website } from "@/generated/client";
 import subjectTypeFromGraphql from "./subjectTypeFromGraphql";
 
 type Actions = "manage" | "create" | "read" | "update" | "delete";
-type Subjects = "User" | User | "all";
+type Subjects = "User" | User | "Website" | Website | "all";
 
 export type AppAbility = Ability<[Actions, Subjects]>;
 export const AppAbility = Ability as AbilityClass<AppAbility>;
 
 export default function defineRulesFor(user: User, role: string) {
   const { can, cannot, rules } = new AbilityBuilder(AppAbility);
-
   if (role === "super_admin") {
     can("manage", "all");
   } else if (role === "admin") {
-    can("manage", "all", {
+    can("manage", "User", {
       "role.type": { $in: ["ADMIN", "AGENT", "CALL_CENTER", "MEMBER"] },
     });
+    can("manage", "Website");
   } else if (role === "agent") {
     can(["read", "create"], "User");
     can(["update"], "User", { id: user.id });

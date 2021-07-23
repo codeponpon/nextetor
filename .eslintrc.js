@@ -12,5 +12,8 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "react/display-name": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-var-requires": "off",
   },
 };

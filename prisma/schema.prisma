@@ -93,17 +93,18 @@ model Role {
 
 // Website config
 model Website {
-  id          Int           @id @default(autoincrement())
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      Int
-  maintenance Maintenance?
-  name        String
-  domain      String?       @unique
-  subdomain   String?
-  settings    Json?
-  status      ConfigStatus? @default(DEACTIVATED)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime?     @updatedAt
+  id            Int            @id @default(autoincrement())
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  maintenance   Maintenance?
+  vercelProject VercelProject?
+  name          String
+  domain        String?        @unique
+  subdomain     String?
+  settings      Json?
+  status        ConfigStatus?  @default(DEACTIVATED)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
 }
 
 model Maintenance {
@@ -117,4 +118,15 @@ model Maintenance {
   message      String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime?    @updatedAt
+}
+
+model VercelProject {
+  id        Int       @id @default(autoincrement())
+  website   Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  websiteId Int
+  vercelId  String?
+  accountId String?
+  details   Json
+  createdAt DateTime
+  updatedAt DateTime? @updatedAt
 }

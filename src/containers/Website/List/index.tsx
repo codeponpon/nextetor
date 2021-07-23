@@ -1,7 +1,8 @@
 import React from "react";
 
-import { Table, Avatar, Modal } from "antd";
+import { Table, Button, Modal } from "antd";
 import { ColumnsType } from "antd/lib/table";
+import { DownloadOutlined } from "@ant-design/icons";
 import { MenuInfo } from "rc-menu/lib/interface";
 import moment from "moment";
 
@@ -42,12 +43,9 @@ const List: React.FC<IWebsiteListProps> = ({
 
   const columns: ColumnsType<Website> = [
     {
-      title: `Image`,
-      dataIndex: "image",
-      render: (text: string) => (
-        <Avatar shape="square" src={`https://i.pravatar.cc/150?img=37`} />
-      ),
-      width: "5%",
+      title: `ID`,
+      dataIndex: "id",
+      width: "3%",
     },
     {
       title: `Website Name`,
@@ -100,18 +98,23 @@ const List: React.FC<IWebsiteListProps> = ({
       title: "Operation",
       key: "operation",
       fixed: "right",
-      width: "8%",
+      width: "13%",
       render: (text: string, record) => {
         return (
-          <DropOption
-            record={record}
-            onMenuClick={(e: MenuInfo) => handleMenuClick(record, e)}
-            menuOptions={[
-              { key: 3, name: "View" },
-              { key: 1, name: "Update" },
-              { key: 2, name: "Delete" },
-            ]}
-          />
+          <>
+            <DropOption
+              record={record}
+              onMenuClick={(e: MenuInfo) => handleMenuClick(record, e)}
+              menuOptions={[
+                { key: 3, name: "View" },
+                { key: 1, name: "Update" },
+                { key: 2, name: "Delete" },
+              ]}
+            />
+            <Button type="primary" shape="round" icon={<DownloadOutlined />}>
+              Deploy
+            </Button>
+          </>
         );
       },
     },

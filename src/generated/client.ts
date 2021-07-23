@@ -60,6 +60,14 @@ export type CreateUserInput = {
   profile?: Maybe<CreateProfileInput>;
 };
 
+export type CreateVercelProjectInput = {
+  vercelId?: Maybe<Scalars['String']>;
+  accountId?: Maybe<Scalars['String']>;
+  details?: Maybe<Scalars['JSON']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type CreateWebsiteInput = {
   userId: Scalars['Int'];
   name: Scalars['String'];
@@ -68,6 +76,7 @@ export type CreateWebsiteInput = {
   settings?: Maybe<Scalars['JSON']>;
   status?: Maybe<ConfigStatus>;
   maintenance?: Maybe<CreateMaintenanceInput>;
+  vercelProject?: Maybe<CreateVercelProjectInput>;
   createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
 };
@@ -263,6 +272,7 @@ export type UpdateWebsiteInput = {
   settings?: Maybe<Scalars['JSON']>;
   status?: Maybe<ConfigStatus>;
   maintenance?: Maybe<CreateMaintenanceInput>;
+  vercelProject?: Maybe<CreateVercelProjectInput>;
   updatedAt?: Maybe<Scalars['Date']>;
 };
 
@@ -287,12 +297,23 @@ export enum UserStatus {
   Ban = 'BAN'
 }
 
+export type VercelProject = {
+  __typename?: 'VercelProject';
+  id: Scalars['Int'];
+  vercelId?: Maybe<Scalars['String']>;
+  accountId?: Maybe<Scalars['String']>;
+  details?: Maybe<Scalars['JSON']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type Website = {
   __typename?: 'Website';
   id: Scalars['Int'];
   userId: Scalars['Int'];
   user?: Maybe<User>;
   maintenance?: Maybe<Maintenance>;
+  vercelProject?: Maybe<VercelProject>;
   name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
@@ -338,6 +359,9 @@ export type CreateWebsiteMutation = (
     )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )>, vercelProject?: Maybe<(
+      { __typename?: 'VercelProject' }
+      & Pick<VercelProject, 'id' | 'vercelId' | 'accountId' | 'details' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -378,6 +402,9 @@ export type DeleteWebsiteMutation = (
     )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )>, vercelProject?: Maybe<(
+      { __typename?: 'VercelProject' }
+      & Pick<VercelProject, 'id' | 'vercelId' | 'accountId' | 'details' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -449,6 +476,9 @@ export type UpdateWebsiteMutation = (
     )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )>, vercelProject?: Maybe<(
+      { __typename?: 'VercelProject' }
+      & Pick<VercelProject, 'id' | 'vercelId' | 'accountId' | 'details' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -515,6 +545,9 @@ export type WebsiteQuery = (
     )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )>, vercelProject?: Maybe<(
+      { __typename?: 'VercelProject' }
+      & Pick<VercelProject, 'id' | 'vercelId' | 'accountId' | 'details' | 'createdAt' | 'updatedAt'>
     )> }
   )> }
 );
@@ -537,6 +570,9 @@ export type WebsitesQuery = (
     )>, maintenance?: Maybe<(
       { __typename?: 'Maintenance' }
       & Pick<Maintenance, 'id' | 'configType' | 'configStatus' | 'startDate' | 'endDate' | 'message' | 'createdAt' | 'updatedAt'>
+    )>, vercelProject?: Maybe<(
+      { __typename?: 'VercelProject' }
+      & Pick<VercelProject, 'id' | 'vercelId' | 'accountId' | 'details' | 'createdAt' | 'updatedAt'>
     )> }
   )>> }
 );
@@ -621,6 +657,14 @@ export const CreateWebsiteDocument = gql`
       startDate
       endDate
       message
+      createdAt
+      updatedAt
+    }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
       createdAt
       updatedAt
     }
@@ -734,6 +778,14 @@ export const DeleteWebsiteDocument = gql`
       startDate
       endDate
       message
+      createdAt
+      updatedAt
+    }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
       createdAt
       updatedAt
     }
@@ -948,6 +1000,14 @@ export const UpdateWebsiteDocument = gql`
       createdAt
       updatedAt
     }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }
@@ -1139,6 +1199,14 @@ export const WebsiteDocument = gql`
       createdAt
       updatedAt
     }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }
@@ -1193,6 +1261,14 @@ export const WebsitesDocument = gql`
       startDate
       endDate
       message
+      createdAt
+      updatedAt
+    }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
       createdAt
       updatedAt
     }

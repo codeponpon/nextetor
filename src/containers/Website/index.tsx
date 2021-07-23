@@ -8,9 +8,10 @@ import {
   WebsitesDocument,
 } from "@/generated/client";
 import { ActionType } from "@/redux/actions/types";
+import { VercelCreateProject } from "@/services/vercel";
 import AuthStorage from "@/utils/auth-storage";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { Tabs, Button } from "antd";
+import { useMutation, useQuery } from "@apollo/client";
+import { Tabs, Button, message } from "antd";
 import { useRouter } from "next/router";
 import { stringify } from "query-string";
 import React from "react";
@@ -46,6 +47,13 @@ export const WebsitePage: React.FC<IWebsites> = ({
   const [modalType, setModalType] = useState("");
   const [currentItem, setCurrentItem] = useState({ userId: 0, name: "" });
   const [loading, setLoading] = useState(false);
+  const [isLoginVercel, setIsLoginVercel] = useState(
+    !!AuthStorage.vercel.token
+  );
+  const [vercelData, setVercelData] = useState({ token: "", securityCode: "" });
+  const [isVerifyLogin, setIsVerifyLogin] = useState(
+    !!AuthStorage.vercel.token
+  );
 
   const {
     data,
@@ -122,6 +130,16 @@ export const WebsitePage: React.FC<IWebsites> = ({
       setLoading(true);
       try {
         if (modalType === "create") {
+          const response = await VercelCreateProject({
+            name: websiteInput.name,
+            dispatch: dispatch,
+          });
+          websiteInput.vercelProject = {
+            vercelId: response.id,
+            accountId: response.accountId,
+            details: response,
+          };
+          console.log("CREATE PARAMS", websiteInput);
           const { data } = await createWebsite({
             variables: { input: websiteInput },
           });
@@ -149,6 +167,66 @@ export const WebsitePage: React.FC<IWebsites> = ({
     },
   };
 
+  const loginVercel = async () => {
+    setLoading(true);
+    const vercel = await fetch(
+      `${process.env.VERCEL_API_URL}/now/registration`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          email: process.env.VERCEL_EMAIL,
+          tokenName: process.env.TOKEN_NAME,
+        }),
+      }
+    );
+    const vercelData = await vercel.json();
+    setVercelData(vercelData);
+    setIsLoginVercel(true);
+    message.success({
+      content: "Go to Inbox to verify your email to log on to Vercel",
+      key: "updatable",
+      duration: 5,
+    });
+    setLoading(false);
+  };
+
+  const verifyLogin = async () => {
+    setLoading(true);
+    const verifyAccountRes = await fetch(
+      `${process.env.VERCEL_API_URL}/now/registration/verify?email=${process.env.VERCEL_EMAIL}&token=${vercelData.token}`
+    );
+    const { token } = await verifyAccountRes.json();
+    AuthStorage.value = {
+      userId: AuthStorage.userId,
+      token: AuthStorage.token,
+      role: AuthStorage.role,
+      user: AuthStorage.user,
+      vercelToken: token,
+    };
+    setIsVerifyLogin(true);
+    setLoading(false);
+  };
+
+  const tabButton = () => {
+    if (!isLoginVercel) {
+      return (
+        <Button onClick={loginVercel} loading={loading}>
+          Login Vercel
+        </Button>
+      );
+    }
+
+    if (!isVerifyLogin) {
+      return (
+        <Button onClick={verifyLogin} loading={loading}>
+          Verify Login
+        </Button>
+      );
+    }
+
+    return <Button onClick={handleCreateWebsite}>Create Website</Button>;
+  };
+
   return (
     <Page>
       <Tabs
@@ -158,9 +236,7 @@ export const WebsitePage: React.FC<IWebsites> = ({
             : String(EnumPostStatus.PUBLISHED)
         }
         onTabClick={handleTabClick}
-        tabBarExtraContent={
-          <Button onClick={handleCreateWebsite}>Create Website</Button>
-        }
+        tabBarExtraContent={tabButton()}
       >
         <TabPane tab={`Publised`} key={String(EnumPostStatus.PUBLISHED)}>
           <List {...listProps} />
