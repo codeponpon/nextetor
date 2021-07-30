@@ -3,14 +3,14 @@ module.exports = function (api) {
   api.cache(true);
 
   return {
-    presets: [['next/babel']],
+    presets: [["next/babel"]],
     plugins: [
-      ['import', { libraryName: 'antd', style: true }],
+      ["import", { libraryName: "antd", style: true }],
       [
-        'module-resolver',
+        "module-resolver",
         {
           alias: {
-            '@': './src',
+            "@": "./src",
           },
         },
       ],

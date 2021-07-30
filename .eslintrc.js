@@ -11,5 +11,6 @@ module.exports = {
   rules: {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "jsx-a11y/anchor-is-valid": "off",
+    "@typescript-eslint/no-unused-vars": "off",
   },
 };
