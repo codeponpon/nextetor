@@ -11,7 +11,7 @@ import DropOption from "@/components/DropOption";
 import styles from "./style.module.less";
 import router from "next/router";
 import Link from "next/link";
-import { saveJsZip } from "@/utils/saveJsZip";
+import { publishJSON } from "@/utils/publishJSON";
 export interface IWebsiteListProps {
   dataSource: Website[];
   onDeleteItem: (id: any) => void;
@@ -36,7 +36,7 @@ const List: React.FC<IWebsiteListProps> = ({
       description: "Game Client",
       fraction: null,
     };
-    saveJsZip((data) => {
+    publishJSON((data) => {
       console.log("JS ZIP DATA", {
         website_id: record.id,
         name: record.name,
