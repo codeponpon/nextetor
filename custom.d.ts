@@ -30,6 +30,8 @@ declare namespace NodeJS {
     VERCEL_API_URL: string;
     VERCEL_EMAIL: string;
     TOKEN_NAME: string;
+
+    DEPLOYMENT_URL: string;
   }
 }
 

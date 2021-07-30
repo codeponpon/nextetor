@@ -382,14 +382,17 @@ export const resolvers: Resolvers<ApollowContext> = {
           domain: websiteData.domain,
           subdomain: websiteData.subdomain,
           status: websiteData.status as ConfigStatus,
-          vercelProject: {
-            create: {
-              ...vercelProject,
-              createdAt: dayjs(
-                vercelProject && vercelProject.createdAt
-              ).format(),
-            },
-          },
+          vercelProject: !vercelProject
+            ? undefined
+            : {
+                create: {
+                  ...vercelProject,
+                  details: vercelProject.details,
+                  createdAt: dayjs(
+                    vercelProject && vercelProject.createdAt
+                  ).format(),
+                },
+              },
         },
       });
       return {
