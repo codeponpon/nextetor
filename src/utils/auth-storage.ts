@@ -20,6 +20,15 @@ class AuthStorage extends Storage {
   get user() {
     return this.value && this.value.user;
   }
+
+  get vercel() {
+    return (
+      this.value && {
+        token: this.value.vercelToken,
+        securityCode: this.value.securityCode,
+      }
+    );
+  }
 }
 
 export default new AuthStorage("AUTH");

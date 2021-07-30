@@ -21,6 +21,14 @@ mutation DeleteWebsite($id: Int!) {
       createdAt
       updatedAt
     }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }

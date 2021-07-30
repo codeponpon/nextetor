@@ -1,7 +1,8 @@
 import React from "react";
 
-import { Table, Avatar, Modal } from "antd";
+import { Table, Button, Modal } from "antd";
 import { ColumnsType } from "antd/lib/table";
+import { DownloadOutlined } from "@ant-design/icons";
 import { MenuInfo } from "rc-menu/lib/interface";
 import moment from "moment";
 
@@ -10,7 +11,7 @@ import DropOption from "@/components/DropOption";
 import styles from "./style.module.less";
 import router from "next/router";
 import Link from "next/link";
-
+import { saveJsZip } from "@/utils/saveJsZip";
 export interface IWebsiteListProps {
   dataSource: Website[];
   onDeleteItem: (id: any) => void;
@@ -19,12 +20,54 @@ export interface IWebsiteListProps {
 }
 
 const { confirm } = Modal;
+const nowURL =
+  process.env.MODE === "development"
+    ? "http://localhost:3000/"
+    : "DEPLOYMENT_URL";
 
 const List: React.FC<IWebsiteListProps> = ({
   onEditItem,
   onDeleteItem,
   ...tableProps
 }) => {
+  const onPublish = (record: Website, e: React.MouseEvent<HTMLElement>) => {
+    const pageData = {
+      title: "Game Client",
+      description: "Game Client",
+      fraction: null,
+    };
+    saveJsZip((data) => {
+      console.log("JS ZIP DATA", {
+        website_id: record.id,
+        name: record.name,
+        files: [data],
+      });
+      fetch(`${nowURL}api/next/deploy`, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: record.id,
+          name: record.name,
+          files: [
+            {
+              file: data.file,
+              data: data.data,
+            },
+          ],
+        }),
+      })
+        .then((res) => res.json())
+        .then(({ id, error }) => {
+          if (error) {
+            console.error("Error:", error.message);
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    });
+  };
   const handleMenuClick = (record: Website, e: MenuInfo) => {
     if (e.key === "1") {
       onEditItem(record);
@@ -42,12 +85,9 @@ const List: React.FC<IWebsiteListProps> = ({
 
   const columns: ColumnsType<Website> = [
     {
-      title: `Image`,
-      dataIndex: "image",
-      render: (text: string) => (
-        <Avatar shape="square" src={`https://i.pravatar.cc/150?img=37`} />
-      ),
-      width: "5%",
+      title: `ID`,
+      dataIndex: "id",
+      width: "3%",
     },
     {
       title: `Website Name`,
@@ -100,18 +140,30 @@ const List: React.FC<IWebsiteListProps> = ({
       title: "Operation",
       key: "operation",
       fixed: "right",
-      width: "8%",
+      width: "13%",
       render: (text: string, record) => {
         return (
-          <DropOption
-            record={record}
-            onMenuClick={(e: MenuInfo) => handleMenuClick(record, e)}
-            menuOptions={[
-              { key: 3, name: "View" },
-              { key: 1, name: "Update" },
-              { key: 2, name: "Delete" },
-            ]}
-          />
+          <>
+            <DropOption
+              record={record}
+              onMenuClick={(e: MenuInfo) => handleMenuClick(record, e)}
+              menuOptions={[
+                { key: 3, name: "View" },
+                { key: 1, name: "Update" },
+                { key: 2, name: "Delete" },
+              ]}
+            />
+            <Button
+              type="primary"
+              shape="round"
+              icon={<DownloadOutlined />}
+              onClick={(e: React.MouseEvent<HTMLElement>) =>
+                onPublish(record, e)
+              }
+            >
+              Deploy
+            </Button>
+          </>
         );
       },
     },

@@ -192,7 +192,7 @@ const getWebsiteById = async (
 ) => {
   return await prisma.website.findUnique({
     where: { id: id },
-    include: { user: true, maintenance: true },
+    include: { user: true, maintenance: true, vercelProject: true },
   });
 };
 
@@ -215,7 +215,7 @@ export const resolvers: Resolvers<ApollowContext> = {
 
       const websites = await context.prisma.website.findMany({
         where: whereClause,
-        include: { user: true, maintenance: true },
+        include: { user: true, maintenance: true, vercelProject: true },
       });
 
       return websites.map((website) => ({
@@ -229,6 +229,9 @@ export const resolvers: Resolvers<ApollowContext> = {
           configStatus: website.maintenance?.configStatus as ConfigStatus,
           configType: website.maintenance?.configType as ConfigType,
         },
+        vercelProject: website.vercelProject && {
+          ...website.vercelProject,
+        },
         user: website.user && {
           ...website.user,
           id: Number(website.user.id),
@@ -239,7 +242,7 @@ export const resolvers: Resolvers<ApollowContext> = {
     },
     async website(parent, args, context): Promise<Website | null> {
       const website = await getWebsiteById(args.id, context.db, context.prisma);
-      if (!website) return null;
+      if (!website) throw new UserInputError("Could not found the website!");
       return {
         ...website,
         status: website.status as ConfigStatus,
@@ -249,6 +252,9 @@ export const resolvers: Resolvers<ApollowContext> = {
           websiteId: Number(website.id),
           configStatus: website.maintenance?.configStatus as ConfigStatus,
           configType: website.maintenance?.configType as ConfigType,
+        },
+        vercelProject: website.vercelProject && {
+          ...website.vercelProject,
         },
         user: website.user && {
           ...website.user,
@@ -367,43 +373,57 @@ export const resolvers: Resolvers<ApollowContext> = {
       };
     },
     async createWebsite(parent, args, context) {
+      const { vercelProject, maintenance, ...websiteData } = args.input;
       const website = await context.prisma.website.create({
+        include: { vercelProject: true },
         data: {
-          userId: args.input.userId,
-          name: args.input.name,
-          domain: args.input.domain,
-          subdomain: args.input.subdomain,
-          status: args.input.status as ConfigStatus,
+          userId: websiteData.userId,
+          name: websiteData.name,
+          domain: websiteData.domain,
+          subdomain: websiteData.subdomain,
+          status: websiteData.status as ConfigStatus,
+          vercelProject: !vercelProject
+            ? undefined
+            : {
+                create: {
+                  ...vercelProject,
+                  details: vercelProject.details,
+                  createdAt: dayjs(
+                    vercelProject && vercelProject.createdAt
+                  ).format(),
+                },
+              },
         },
       });
       return {
         ...website,
         status: website.status as ConfigStatus,
+        vercelProject: website.vercelProject && {
+          ...website.vercelProject,
+        },
       };
     },
     async updateWebsite(parent, args, context) {
       try {
         const { id, maintenance, ...websiteData } = args.input;
-        let updateWebsiteData;
-
-        if (maintenance) {
-          updateWebsiteData = {
-            ...websiteData,
-            status: websiteData.status as ConfigStatus,
-            maintenance: {
-              update: {
-                ...maintenance,
-                configType: maintenance.configType as ConfigType,
-                configStatus: maintenance.configStatus as ConfigStatus,
-              },
+        const updateWebsiteData = {
+          ...websiteData,
+          status: websiteData.status as ConfigStatus,
+          vercelProject: {
+            update: {
+              ...websiteData.vercelProject,
             },
-          };
-        } else {
-          updateWebsiteData = {
-            ...websiteData,
-            status: websiteData.status as ConfigStatus,
-          };
-        }
+          },
+          maintenance: !maintenance
+            ? {}
+            : {
+                update: {
+                  ...maintenance,
+                  configType: maintenance.configType as ConfigType,
+                  configStatus: maintenance.configStatus as ConfigStatus,
+                },
+              },
+        };
 
         const website = await context.prisma.website.update({
           where: { id: Number(id) },
@@ -418,7 +438,7 @@ export const resolvers: Resolvers<ApollowContext> = {
             id: website.user.id,
             createdBy: website.user.createdBy as CreatedBy,
           },
-          maintenance: {
+          maintenance: website.maintenance && {
             ...website.maintenance,
             id: Number(website.maintenance?.id),
             websiteId: Number(website.maintenance?.websiteId),
@@ -441,16 +461,19 @@ export const resolvers: Resolvers<ApollowContext> = {
       return {
         ...website,
         status: website.status as ConfigStatus,
-        user: {
+        user: website.user && {
           id: website.user.id,
           createdBy: website.user.createdBy as CreatedBy,
         },
-        maintenance: {
+        maintenance: website.maintenance && {
           ...website.maintenance,
           id: Number(website.maintenance?.id),
           websiteId: Number(website.maintenance?.websiteId),
           configType: website.maintenance?.configType as ConfigType,
           configStatus: website.maintenance?.configStatus as ConfigStatus,
+        },
+        vercelProject: website.vercelProject && {
+          ...website.vercelProject,
         },
       };
     },

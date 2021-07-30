@@ -1,17 +1,13 @@
 import React, { createRef } from "react";
 
 import { Form, Input, Modal, FormInstance, Select, message } from "antd";
-import {
-  ConfigStatus,
-  CreateWebsiteInput,
-  RolesDocument,
-  Website,
-} from "@/generated/client";
+import { ConfigStatus, CreateWebsiteInput, Website } from "@/generated/client";
 import dayjs from "dayjs";
-import { useQuery } from "@apollo/client";
 import AuthStorage from "@/utils/auth-storage";
-import { startCase } from "lodash";
 import { $enum } from "ts-enum-util";
+import { ActionType } from "@/redux/actions/types";
+import { useDispatch } from "react-redux";
+import { startCase } from "lodash";
 
 export interface IWebsiteModalProps {
   action?: string;
@@ -39,12 +35,10 @@ const formItemLayout = {
 };
 
 export const WebsiteModal: React.FC<IWebsiteModalProps> = (props) => {
-  const currentRole = AuthStorage.role;
+  const dispatch = useDispatch();
   const { item, onOk, action, ...modalProps } = props;
-  const { data, loading } = useQuery(RolesDocument);
   const formRef = createRef<FormInstance>();
 
-  const roles = loading ? [] : data.roles;
   const handleOk = () => {
     formRef.current
       ?.validateFields()
@@ -64,8 +58,28 @@ export const WebsiteModal: React.FC<IWebsiteModalProps> = (props) => {
         }, 1000);
       })
       .catch((errorInfo: any) => {
-        console.log("ERROR Info: ", errorInfo);
+        dispatch({
+          type: ActionType.REQUEST_ERROR,
+          payload: errorInfo,
+        });
       });
+  };
+
+  const checkName = async (_: any, value: string) => {
+    if (action === "update") return Promise.resolve();
+    const cb = await fetch(
+      `${process.env.VERCEL_API_URL}/v8/projects/${value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${AuthStorage.vercel.token}`,
+        },
+      }
+    );
+    const response = await cb.json();
+    if (response && response.error?.code !== "not_found") {
+      return Promise.reject("The name is duplicate");
+    }
+    return Promise.resolve();
   };
 
   return (
@@ -102,9 +116,9 @@ export const WebsiteModal: React.FC<IWebsiteModalProps> = (props) => {
           label="name"
           hasFeedback
           {...formItemLayout}
-          rules={[{ required: true }]}
+          rules={[{ required: true }, { validator: checkName }]}
         >
-          <Input />
+          <Input disabled={action === "update"} />
         </FormItem>
         <FormItem
           name="subdomain"

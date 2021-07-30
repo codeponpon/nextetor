@@ -21,6 +21,14 @@ query Websites($id: Int, $status: ConfigStatus, $name: String) {
       createdAt
       updatedAt
     }
+    vercelProject {
+      id
+      vercelId
+      accountId
+      details
+      createdAt
+      updatedAt
+    }
     createdAt
     updatedAt
   }

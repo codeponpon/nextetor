@@ -3,9 +3,10 @@ import { BarsOutlined, DownOutlined } from "@ant-design/icons";
 import { Dropdown, Button, Menu } from "antd";
 import { MenuInfo } from "rc-menu/lib/interface";
 import { AbilityContext } from "@/components/Can";
+import { User, Website } from "@/generated/client";
 
 interface iProps {
-  record: any;
+  record: User | Website;
   onMenuClick: (e: MenuInfo) => void;
   menuOptions: { key: any; name: string }[];
   buttonStyle?: any;

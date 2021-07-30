@@ -24,6 +24,7 @@ export default gql`
     userId: Int!
     user: User
     maintenance: Maintenance
+    vercelProject: VercelProject
     name: String!
     domain: String
     subdomain: String
@@ -42,6 +43,15 @@ export default gql`
     startDate: Date
     endDate: Date
     message: String
+    createdAt: Date
+    updatedAt: Date
+  }
+
+  type VercelProject {
+    id: Int!
+    vercelId: String
+    accountId: String
+    details: JSON
     createdAt: Date
     updatedAt: Date
   }

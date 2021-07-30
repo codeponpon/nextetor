@@ -18,6 +18,7 @@ import classes from "./style.module.less";
 import { useDispatch } from "react-redux";
 import { actionLogout } from "@/redux/actions/auth";
 import authStorage from "@/utils/auth-storage";
+import router from "next/router";
 
 interface IProps {
   style?: any;
@@ -42,6 +43,11 @@ const AvatarDropDown: React.FC<IProps> = ({ style }: IProps) => {
       },
     });
   }, []);
+
+  if (!authStorage) {
+    router.replace("/");
+  }
+
   const fullName = authStorage.user!.profile?.firstName;
   const avatar = "https://i.pravatar.cc/150?img=37";
   const email = authStorage.user!.profile?.email;

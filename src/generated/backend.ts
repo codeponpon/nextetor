@@ -59,6 +59,14 @@ export type CreateUserInput = {
   profile?: Maybe<CreateProfileInput>;
 };
 
+export type CreateVercelProjectInput = {
+  vercelId?: Maybe<Scalars['String']>;
+  accountId?: Maybe<Scalars['String']>;
+  details?: Maybe<Scalars['JSON']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type CreateWebsiteInput = {
   userId: Scalars['Int'];
   name: Scalars['String'];
@@ -67,6 +75,7 @@ export type CreateWebsiteInput = {
   settings?: Maybe<Scalars['JSON']>;
   status?: Maybe<ConfigStatus>;
   maintenance?: Maybe<CreateMaintenanceInput>;
+  vercelProject?: Maybe<CreateVercelProjectInput>;
   createdAt?: Maybe<Scalars['Date']>;
   updatedAt?: Maybe<Scalars['Date']>;
 };
@@ -262,6 +271,7 @@ export type UpdateWebsiteInput = {
   settings?: Maybe<Scalars['JSON']>;
   status?: Maybe<ConfigStatus>;
   maintenance?: Maybe<CreateMaintenanceInput>;
+  vercelProject?: Maybe<CreateVercelProjectInput>;
   updatedAt?: Maybe<Scalars['Date']>;
 };
 
@@ -286,12 +296,23 @@ export enum UserStatus {
   Ban = 'BAN'
 }
 
+export type VercelProject = {
+  __typename?: 'VercelProject';
+  id: Scalars['Int'];
+  vercelId?: Maybe<Scalars['String']>;
+  accountId?: Maybe<Scalars['String']>;
+  details?: Maybe<Scalars['JSON']>;
+  createdAt?: Maybe<Scalars['Date']>;
+  updatedAt?: Maybe<Scalars['Date']>;
+};
+
 export type Website = {
   __typename?: 'Website';
   id: Scalars['Int'];
   userId: Scalars['Int'];
   user?: Maybe<User>;
   maintenance?: Maybe<Maintenance>;
+  vercelProject?: Maybe<VercelProject>;
   name: Scalars['String'];
   domain?: Maybe<Scalars['String']>;
   subdomain?: Maybe<Scalars['String']>;
@@ -386,6 +407,7 @@ export type ResolversTypes = {
   CreateProfileInput: CreateProfileInput;
   CreateUserInput: CreateUserInput;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  CreateVercelProjectInput: CreateVercelProjectInput;
   CreateWebsiteInput: CreateWebsiteInput;
   CreatedBy: CreatedBy;
   Date: ResolverTypeWrapper<Scalars['Date']>;
@@ -403,6 +425,7 @@ export type ResolversTypes = {
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: ResolverTypeWrapper<User>;
   UserStatus: UserStatus;
+  VercelProject: ResolverTypeWrapper<VercelProject>;
   Website: ResolverTypeWrapper<Website>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -414,6 +437,7 @@ export type ResolversParentTypes = {
   CreateProfileInput: CreateProfileInput;
   CreateUserInput: CreateUserInput;
   Int: Scalars['Int'];
+  CreateVercelProjectInput: CreateVercelProjectInput;
   CreateWebsiteInput: CreateWebsiteInput;
   Date: Scalars['Date'];
   JSON: Scalars['JSON'];
@@ -428,6 +452,7 @@ export type ResolversParentTypes = {
   UpdateUserInput: UpdateUserInput;
   UpdateWebsiteInput: UpdateWebsiteInput;
   User: User;
+  VercelProject: VercelProject;
   Website: Website;
   Boolean: Scalars['Boolean'];
 };
@@ -513,11 +538,22 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type VercelProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['VercelProject'] = ResolversParentTypes['VercelProject']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  vercelId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  accountId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  details?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type WebsiteResolvers<ContextType = any, ParentType extends ResolversParentTypes['Website'] = ResolversParentTypes['Website']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   maintenance?: Resolver<Maybe<ResolversTypes['Maintenance']>, ParentType, ContextType>;
+  vercelProject?: Resolver<Maybe<ResolversTypes['VercelProject']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subdomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -537,6 +573,7 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   Role?: RoleResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  VercelProject?: VercelProjectResolvers<ContextType>;
   Website?: WebsiteResolvers<ContextType>;
 };
 
